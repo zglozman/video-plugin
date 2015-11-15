@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "KFAACEncoder.h"
 #import "KFH264Encoder.h"
-#import <CocoaHTTPServer/HTTPServer.h>
+#import "HTTPServer.h"
 @class KFRecorder, KFHLSWriter, KFStream;
 
 @protocol KFRecorderDelegate <NSObject>
