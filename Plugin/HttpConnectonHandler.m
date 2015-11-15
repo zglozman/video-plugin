@@ -5,12 +5,11 @@
 //  Created by Zeev Glozman on 10/29/15.
 //  Copyright © 2015 Kickflip. All rights reserved. //
 
-@import  Foundation;
 #import "HttpConnectionHandler.h"
 #import "HTTPResponeWithHeaders.h"
 #import "MyWebSocket.h"
 #import "HTTPMessage.h"
-#import <HTTPConnection.h>
+#import "HTTPConnection.h"
 #import "HTTPDynamicFileResponse.h"
 #import "GCDAsyncSocket.h"
 // Log levels: off, error, warn, info, verbose

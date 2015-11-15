@@ -80,6 +80,7 @@
   <header-file src="Plugin/HttpConnectionHandler.h"/>
   <header-file src="Plugin/MyWebSocket.h"/>
   <header-file src="Plugin/NSDictionary+BVJSONString.h"/>
+  <header-file src="Plugin/VideoManager.h"/>
   <header-file src="Recorder/Codecs/Audio/AAC/KFAACEncoder.h"/>
   <header-file src="Recorder/Codecs/Audio/KFAudioEncoder.h"/>
   <header-file src="Recorder/Codecs/KFEncoder.h"/>
@@ -154,6 +155,7 @@
   <source-file src="Plugin/HttpConnectonHandler.m"/>
   <source-file src="Plugin/MyWebSocket.m"/>
   <source-file src="Plugin/NSDictionary+BVJSONString.m"/>
+  <source-file src="Plugin/VideoManager.m"/>
   <source-file src="Recorder/Codecs/Audio/AAC/KFAACEncoder.m"/>
   <source-file src="Recorder/Codecs/Audio/KFAudioEncoder.m"/>
   <source-file src="Recorder/Codecs/KFEncoder.m"/>
