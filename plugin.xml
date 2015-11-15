@@ -137,7 +137,6 @@
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/DAVResponse.m"/>
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/DELETEResponse.m"/>
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/PUTResponse.m"/>
-  <source-file src="CocoaLumberjack/Classes/CocoaLumberjack.swift"/>
   <source-file src="CocoaLumberjack/Classes/DDASLLogCapture.m"/>
   <source-file src="CocoaLumberjack/Classes/DDASLLogger.m"/>
   <source-file src="CocoaLumberjack/Classes/DDAbstractDatabaseLogger.m"/>
