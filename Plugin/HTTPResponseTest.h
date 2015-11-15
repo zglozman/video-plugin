@@ -8,9 +8,9 @@
 
 
 #import <Foundation/Foundation.h>
-#import <HTTPServer.h>
-#import <HTTPResponse.h>
-#import <HTTPConnection.h>
+#import "HTTPServer.h"
+#import "HTTPResponse.h"
+#import "HTTPConnection.h"
 
 @class Connection;
 

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
-#import <HTTPServer.h>
-#import <CocoaHTTPServer/WebSocket.h>
+#import "HTTPServer.h"
+#import "WebSocket.h"
 
 @class KFVideoFrame;
 

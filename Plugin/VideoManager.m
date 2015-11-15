@@ -5,6 +5,8 @@
 //  Created by Artur Khidirnabiev on 07.11.15.
 //  Copyright © 2015 arche. All rights reserved.
 //
+#import <ifaddrs.h>
+#import <arpa/inet.h>
 
 #import "VideoManager.h"
 
@@ -23,7 +25,7 @@
     return httpServer.isRunning;
 }
 
-- (void)startHttpServer{
+- (void)startHttpServer:(void (^)(NSDictionary *info))callback{
     [self copyFiles];
     
     NSError * error;
@@ -38,6 +40,17 @@
     if([httpServer start:&error])
     {
         NSLog(@"Started HTTP Server on port %d", [httpServer listeningPort]);
+        NSString *port = [NSString stringWithFormat:@"%d", [httpServer listeningPort]];
+        NSString *host = [self getIPAddress];
+        
+        
+        NSArray *values = [NSArray arrayWithObjects:host, port, nil];
+        NSArray *keys   = [NSArray arrayWithObjects:@"ip", @"port", nil];
+        
+        NSDictionary *dict = [NSDictionary dictionaryWithObjects:values forKeys:keys];
+        
+        callback(dict);
+        
     }
     else
     {
@@ -66,10 +79,32 @@
     
     [[NSFileManager defaultManager] copyItemAtPath:bundleWebPath toPath:documentsWebPath error:&error];
     NSLog(@"Copy of files finished with %@", error.domain  );
-    //        NSArray * directoryContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsWebPath error:&error];
 }
 
-- (void)dealloc{
-    NSLog(@"Kill server");
+- (NSString *)getIPAddress {
+    NSString *address = @"error";
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    // retrieve the current interfaces - returns 0 on success
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        // Loop through linked list of interfaces
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                // Check if interface is en0 which is the wifi connection on the iPhone
+                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
+                    // Get NSString from C String
+                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    // Free memory
+    freeifaddrs(interfaces);
+    return address;
+    
 }
 @end

@@ -19,24 +19,22 @@
 }
 
 - (void)startHttpServer:(CDVInvokedUrlCommand*)command{
-    [self startServer];
+    
 }
 
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
     CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
     
     [self.viewController presentViewController:controller animated:YES completion:^{
-        [self startServer];
-        
-        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            videomanager = [[VideoManager alloc] init];
+            [videomanager startHttpServer:^(NSDictionary *info) {
+                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
+                
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            }];
+        });
     }];
 }
 
-- (void)startServer{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        videomanager = [[VideoManager alloc] init];
-        [videomanager startHttpServer];
-    });
-}
 @end
