@@ -83,6 +83,8 @@
     } else {
         [sender setTitle:@"Not recording" forState:UIControlStateNormal];
         [self.recorder stopRecording];
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
