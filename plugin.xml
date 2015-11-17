@@ -175,5 +175,7 @@
   <framework src="AVFoundation.framework"/>
   <framework src="AudioToolbox.framework"/>
   <framework src="CoreMedia.framework"/>
+
+  <hook type="after_plugin_add" src="hooks/after_plugin_add/after_plugin_add_libxml_search_path.js" />
  </platform>
 </product>
