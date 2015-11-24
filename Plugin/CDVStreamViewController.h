@@ -12,6 +12,9 @@
 @interface CDVStreamViewController : UIViewController<KFRecorderDelegate>
 @property (nonatomic, strong) KFRecorder *recorder;
 @property (weak, nonatomic) IBOutlet UIView *preview;
+@property (weak, nonatomic) IBOutlet UIView *splash;
+
 - (IBAction)toggleRecording:(id)sender;
+- (IBAction)alertClose:(id)sender;
 @end
 

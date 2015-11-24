@@ -32,8 +32,6 @@
     
     self.recorder = [[KFRecorder alloc] init];
     self.recorder.delegate = self;
-    
-    [self.recorder startRecording];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -79,14 +77,18 @@
 
 - (IBAction)toggleRecording:(UIButton *)sender {
     if (!self.recorder.isRecording) {
-        [sender setTitle:@"Recording" forState:UIControlStateNormal];
+        [sender setSelected:YES];
+        
         [self.recorder startRecording];
     } else {
-        [sender setTitle:@"Not recording" forState:UIControlStateNormal];
-        [self.recorder stopRecording];
+        [sender setSelected:NO];
         
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self.recorder stopRecording];
     }
+}
+
+- (IBAction)alertClose:(id)sender {
+    [self.splash setHidden:YES];
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {
