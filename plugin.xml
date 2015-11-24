@@ -168,7 +168,10 @@
   <source-file src="Recorder/Codecs/Video/KFVideoFrame.m"/>
   <source-file src="Recorder/Inputs/KFRecorder.m"/>
   <source-file src="Recorder/Utilities/KFDateUtils.m"/>
-  <resource-file src="Plugin/CDVStreamView.xib"/>
+  <resource-file src="Plugin/resources/CDVStreamView.xib"/>
+  <resource-file src="Plugin/resources/alert_ok.png"/>
+  <resource-file src="Plugin/resources/pause.png"/>
+  <resource-file src="Plugin/resources/play.png"/>
   <framework src="SystemConfiguration.framework"/>
   <framework src="CoreVideo.framework"/>
   <framework src="CoreMedia.framework"/>
