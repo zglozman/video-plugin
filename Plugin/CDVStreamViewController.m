@@ -43,6 +43,7 @@
     [vieoPreview removeFromSuperlayer];
     vieoPreview.frame = self.preview.bounds;
     
+    [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
     [self.preview.layer addSublayer:vieoPreview];
 }
