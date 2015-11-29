@@ -8,13 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "KFRecorder.h"
+#import "VideoManager.h"
 
 @interface CDVStreamViewController : UIViewController<KFRecorderDelegate>
 @property (nonatomic, strong) KFRecorder *recorder;
+@property VideoManager *manager;
 @property (weak, nonatomic) IBOutlet UIView *preview;
-@property (weak, nonatomic) IBOutlet UIView *splash;
+@property (weak, nonatomic) IBOutlet UIButton *recordButton;
+- (IBAction)closeViewController:(id)sender;
 
 - (IBAction)toggleRecording:(id)sender;
-- (IBAction)alertClose:(id)sender;
 @end
 

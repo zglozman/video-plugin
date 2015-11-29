@@ -32,6 +32,8 @@
     
     self.recorder = [[KFRecorder alloc] init];
     self.recorder.delegate = self;
+
+    [self toggleRecording:self.recordButton];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -70,11 +72,6 @@
     return AVCaptureVideoOrientationPortrait;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (IBAction)toggleRecording:(UIButton *)sender {
     if (!self.recorder.isRecording) {
         [sender setSelected:YES];
@@ -87,8 +84,14 @@
     }
 }
 
-- (IBAction)alertClose:(id)sender {
-    [self.splash setHidden:YES];
+- (IBAction)closeViewController:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (self.manager.serverStatus){
+            [self.manager stopHttpServer:nil];
+        }
+        
+        [self toggleRecording:self.recordButton];
+    }];
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {

@@ -24,6 +24,7 @@
 
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
     CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
+    controller.manager = videomanager;
     
     [self.viewController presentViewController:controller animated:YES completion:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{

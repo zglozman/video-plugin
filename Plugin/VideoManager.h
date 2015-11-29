@@ -11,5 +11,5 @@
 @interface VideoManager : NSObject
 - (BOOL)serverStatus;
 - (void)startHttpServer:(void (^)(NSDictionary *info))callback;
-- (NSDictionary *)serverInfo;
+- (void)stopHttpServer:(void (^)())callback;
 @end
