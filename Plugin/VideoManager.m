@@ -27,8 +27,6 @@
 
 - (void)stopHttpServer:(void (^)())callback{
     [httpServer stop];
-    
-    callback();
 }
 
 - (void)startHttpServer:(void (^)(NSDictionary *info))callback{
