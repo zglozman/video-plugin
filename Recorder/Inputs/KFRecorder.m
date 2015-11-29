@@ -66,8 +66,8 @@ dispatch_queue_t socketQ;
 
 - (void) setupEncoders {
     self.audioSampleRate = 44100;
-    self.videoHeight = 480;
-    self.videoWidth = 640;
+    self.videoHeight = 720;
+    self.videoWidth = 1280;
     int audioBitrate = 64 * 1000; // 64 Kbps
     int maxBitrate = 1000 * 1000; // 1000 mbps
     int videoBitrate = maxBitrate - audioBitrate;
