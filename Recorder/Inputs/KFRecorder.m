@@ -112,6 +112,11 @@ dispatch_queue_t socketQ;
 
     NSError *error = nil;
     AVCaptureDevice* videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+
+    if ([videoDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [videoDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+    }
+
     AVCaptureDeviceInput* videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
     if (error) {
         NSLog(@"Error getting video input device: %@", error.description);
