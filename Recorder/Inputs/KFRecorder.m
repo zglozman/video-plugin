@@ -106,6 +106,10 @@ dispatch_queue_t socketQ;
 }
 
 - (void) setupVideoCapture {
+    [_session beginConfiguration];
+    _session.sessionPreset = AVCaptureSessionPreset1280x720;
+    [_session commitConfiguration];
+
     NSError *error = nil;
     AVCaptureDevice* videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     AVCaptureDeviceInput* videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
