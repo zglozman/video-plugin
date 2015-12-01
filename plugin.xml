@@ -172,6 +172,7 @@
   <resource-file src="Plugin/resources/alert_ok.png"/>
   <resource-file src="Plugin/resources/pause.png"/>
   <resource-file src="Plugin/resources/play.png"/>
+  <resource-file src="Plugin/resources/close_stream_button.png"/>
   <framework src="SystemConfiguration.framework"/>
   <framework src="CoreVideo.framework"/>
   <framework src="CoreMedia.framework"/>

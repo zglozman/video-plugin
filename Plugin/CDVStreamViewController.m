@@ -32,8 +32,6 @@
     
     self.recorder = [[KFRecorder alloc] init];
     self.recorder.delegate = self;
-
-    [self toggleRecording:self.recordButton];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -48,6 +46,13 @@
     [self.preview.layer addSublayer:vieoPreview];
 }
 
+- (void)startVideoStream{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.startIndicator setHidden:YES];
+    });
+    
+    [self toggleRecording:self.recordButton];
+}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
     if (vieoPreview.connection.supportsVideoOrientation) {

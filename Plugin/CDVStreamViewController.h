@@ -15,8 +15,11 @@
 @property VideoManager *manager;
 @property (weak, nonatomic) IBOutlet UIView *preview;
 @property (weak, nonatomic) IBOutlet UIButton *recordButton;
-- (IBAction)closeViewController:(id)sender;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *startIndicator;
 
+- (IBAction)closeViewController:(id)sender;
 - (IBAction)toggleRecording:(id)sender;
+
+- (void)startVideoStream;
 @end
 

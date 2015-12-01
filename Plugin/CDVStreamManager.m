@@ -30,6 +30,8 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             videomanager = [[VideoManager alloc] init];
             [videomanager startHttpServer:^(NSDictionary *info) {
+                [controller startVideoStream];
+                
                 CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
                 
                 [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
