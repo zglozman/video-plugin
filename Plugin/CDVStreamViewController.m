@@ -41,6 +41,10 @@
     [vieoPreview removeFromSuperlayer];
     vieoPreview.frame = self.preview.bounds;
     
+    if (self.recorder.isRecording){
+        [self.startIndicator setHidden:NO];
+    }
+    
     [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
     [self.preview.layer addSublayer:vieoPreview];
@@ -49,9 +53,9 @@
 - (void)startVideoStream{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.startIndicator setHidden:YES];
+        
+        [self toggleRecording:self.recordButton];
     });
-    
-    [self toggleRecording:self.recordButton];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{

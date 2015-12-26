@@ -11,8 +11,11 @@
 #import "VideoManager.h"
 
 #import "HttpConnectionHandler.h"
-#import "MyWebSocket.h"
+
 #import "HTTPServer.h"
+#import "DDKeychain.h"
+
+#import "testCocoaBinarySocket-Swift.h"
 
 @interface VideoManager ()
 @end
@@ -29,15 +32,29 @@
     [httpServer stop];
 }
 
-- (void)startHttpServer:(void (^)(NSDictionary *info))callback{
+- (void)startTcpConnect:(NSString *)host callback:(void (^)(NSString * globalIP, NSNumber * globalPort))callback{
+    TcpProxyClient *client = [[TcpProxyClient alloc] init];
+    
+    [client connect:host onConnect:^{
+        [client createPublicTcpServer];
+    } onTcpConnected:^(NSString * globalIP, NSNumber * globalPort) {
+        callback(globalIP, globalPort);
+    }];
+}
+
+- (void)startHttpServer:(NSNumber *)port :(void (^)(NSDictionary *info))callback{
     [self copyFiles];
     
     NSError * error;
     httpServer = [[HTTPServer alloc] init];
-    [httpServer setPort:8080];
+    DDKeychain *keychain = [[DDKeychain alloc] init];
+    
+    [httpServer setPort:port.intValue];
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     NSLog(@"base path is %@", basePath);
+    
     [httpServer setDocumentRoot:basePath];
     [httpServer setConnectionClass:[HTTPConnectionHandler class]];
     
@@ -70,6 +87,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     NSString * documentsWebPath = [basePath stringByAppendingPathComponent:@"Web"];
+    NSString * documentsCertPath  = [basePath stringByAppendingPathComponent:@"cert"];
     
     NSError *error = nil;
     BOOL success = [fm removeItemAtPath:documentsWebPath error:&error];
@@ -79,10 +97,13 @@
     
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString * bundleWebPath = [resourcePath stringByAppendingPathComponent:@"Web"];
+    NSString * bundleCertPath = [resourcePath stringByAppendingPathComponent:@"cert"];
     
     
     [[NSFileManager defaultManager] copyItemAtPath:bundleWebPath toPath:documentsWebPath error:&error];
+    [[NSFileManager defaultManager] copyItemAtPath:bundleCertPath toPath:documentsCertPath error:&error];
     NSLog(@"Copy of files finished with %@", error.domain  );
+    //        NSArray * directoryContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsWebPath error:&error];
 }
 
 - (NSString *)getIPAddress {

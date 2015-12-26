@@ -75,11 +75,13 @@
   <header-file src="FormatterKit/FormatterKit/TTTTimeIntervalFormatter.h"/>
   <header-file src="Plugin/CDVStreamManager.h"/>
   <header-file src="Plugin/CDVStreamViewController.h"/>
+  <header-file src="Plugin/DDKeychain.h"/>
   <header-file src="Plugin/HTTPResponeWithHeaders.h"/>
   <header-file src="Plugin/HTTPResponseTest.h"/>
   <header-file src="Plugin/HttpConnectionHandler.h"/>
   <header-file src="Plugin/MyWebSocket.h"/>
   <header-file src="Plugin/NSDictionary+BVJSONString.h"/>
+  <header-file src="Plugin/TcpProxyClient-Swift.h"/>
   <header-file src="Plugin/VideoManager.h"/>
   <header-file src="Recorder/Codecs/Audio/AAC/KFAACEncoder.h"/>
   <header-file src="Recorder/Codecs/Audio/KFAudioEncoder.h"/>
@@ -137,6 +139,7 @@
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/DAVResponse.m"/>
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/DELETEResponse.m"/>
   <source-file src="CocoaHTTPServer/Extensions/WebDAV/PUTResponse.m"/>
+  <source-file src="CocoaLumberjack/Classes/CocoaLumberjack.swift"/>
   <source-file src="CocoaLumberjack/Classes/DDASLLogCapture.m"/>
   <source-file src="CocoaLumberjack/Classes/DDASLLogger.m"/>
   <source-file src="CocoaLumberjack/Classes/DDAbstractDatabaseLogger.m"/>
@@ -149,11 +152,14 @@
   <source-file src="FormatterKit/FormatterKit/TTTTimeIntervalFormatter.m"/>
   <source-file src="Plugin/CDVStreamManager.m"/>
   <source-file src="Plugin/CDVStreamViewController.m"/>
+  <source-file src="Plugin/DDKeychain.m"/>
   <source-file src="Plugin/HTTPResponseTest.m"/>
   <source-file src="Plugin/HTTPResponseWithHeaders.m"/>
   <source-file src="Plugin/HttpConnectonHandler.m"/>
   <source-file src="Plugin/MyWebSocket.m"/>
   <source-file src="Plugin/NSDictionary+BVJSONString.m"/>
+  <source-file src="Plugin/TcpAsyncSocket.swift"/>
+  <source-file src="Plugin/TcpProxyClient.swift"/>
   <source-file src="Plugin/VideoManager.m"/>
   <source-file src="Recorder/Codecs/Audio/AAC/KFAACEncoder.m"/>
   <source-file src="Recorder/Codecs/Audio/KFAudioEncoder.m"/>
@@ -168,18 +174,38 @@
   <source-file src="Recorder/Codecs/Video/KFVideoFrame.m"/>
   <source-file src="Recorder/Inputs/KFRecorder.m"/>
   <source-file src="Recorder/Utilities/KFDateUtils.m"/>
-  <resource-file src="Plugin/resources/CDVStreamView.xib"/>
-  <resource-file src="Plugin/resources/alert_ok.png"/>
-  <resource-file src="Plugin/resources/pause.png"/>
-  <resource-file src="Plugin/resources/play.png"/>
-  <resource-file src="Plugin/resources/close_stream_button.png"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketAckEmitter.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketAckManager.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketAnyEvent.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketEngine.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketEngineClient.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketEnginePacketType.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketEngineSpec.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketEventHandler.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketFixUTF8.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketIOClient.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketIOClientOption.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketIOClientStatus.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketLogger.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketPacket.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketParser.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketStringReader.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SocketTypes.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/SwiftRegex.swift"/>
+  <source-file src="Socket.IO-Client-Swift/Source/WebSocket.swift"/>
+  <resource-file src="resources/CDVStreamView.xib"/>
+  <resource-file src="resources/alert_ok.png"/>
+  <resource-file src="resources/close_stream_button.png"/>
+  <resource-file src="resources/pause.png"/>
+  <resource-file src="resources/play.png"/>
+  <hook type="after_plugin_add" src="hooks/after_plugin_add/after_plugin_add_libxml_search_path.js"/>
   <framework src="SystemConfiguration.framework"/>
   <framework src="CoreVideo.framework"/>
   <framework src="CoreMedia.framework"/>
   <framework src="AVFoundation.framework"/>
   <framework src="AudioToolbox.framework"/>
   <framework src="CoreMedia.framework"/>
-
-  <hook type="after_plugin_add" src="hooks/after_plugin_add/after_plugin_add_libxml_search_path.js" />
+  <framework src="CFNetwork.framework"/>
+  <framework src="Security.framework"/>
  </platform>
 </product>

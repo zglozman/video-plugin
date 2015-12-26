@@ -8,7 +8,41 @@
     <button type="button" onclick="wsavc.stopStream()">Stop Video</button>
     <button type="button" onclick="wsavc.disconnect()">Disconnect</button>
     <br>
-
-    <script type="text/javascript" src="_main.js">;</script>
+    
+    <!--<span><img src="/Web/1.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/2.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/3.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/4.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/5.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/6.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/7.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/8.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/9.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/10.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/11.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/12.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/13.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/14.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/15.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/16.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/17.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/18.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/19.jpg" width="100" height="100" /></span>
+    <span><img src="/Web/20.jpg" width="100" height="100" /></span>
+-->
+    <script>
+    
+      function loadjscssfile(filename){
+              var fileref=document.createElement('script')
+              fileref.setAttribute("type","text/javascript")
+              fileref.setAttribute("src", filename)
+          
+          if (typeof fileref!="undefined")
+          document.getElementsByTagName("head")[0].appendChild(fileref)
+      }
+      
+      loadjscssfile("//"+window.location.hostname+":"+window.location.port+"/Web/_main.js")
+        
+    </script>
   </body>
 </html>

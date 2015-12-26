@@ -10,6 +10,7 @@
 
 @interface VideoManager : NSObject
 - (BOOL)serverStatus;
-- (void)startHttpServer:(void (^)(NSDictionary *info))callback;
+- (void)startTcpConnect:(NSString *)host callback:(void (^)(NSString * globalIP, NSNumber * globalPort))callback;
+- (void)startHttpServer:(NSNumber *)port callback:(void (^)(NSDictionary *info))callback;
 - (void)stopHttpServer:(void (^)())callback;
 @end

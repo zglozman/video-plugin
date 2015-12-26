@@ -6,6 +6,15 @@ var
   fs = require("fs"),
   path = require("path"),
   xcode = require('xcode'),
+  
+  BUILD_VERSION = '8.0',
+  BUILD_VERSION_XCODE = '"' + BUILD_VERSION + '"',
+  RUNPATH_SEARCH_PATHS = '@executable_path/Frameworks',
+  RUNPATH_SEARCH_PATHS_XCODE = '"' + RUNPATH_SEARCH_PATHS + '"',
+  ENABLE_BITCODE = 'NO',
+  ENABLE_BITCODE_XCODE = '"' + ENABLE_BITCODE + '"',
+  INTERFACE_HEADER = 'testCocoaBinarySocket-Swift.h',
+  INTERFACE_HEADER_XCODE = '"'+ INTERFACE_HEADER +'"',
   COMMENT_KEY = /_comment$/;
 
 
@@ -28,7 +37,7 @@ function nonComments(obj) {
     if (!COMMENT_KEY.test(keys[i])) {
       newObj[keys[i]] = obj[keys[i]];
     }
-  }
+  } 
 
   return newObj;
 }
@@ -41,7 +50,10 @@ module.exports = function (context) {
     xcodeProjectName = projectName + '.xcodeproj',
     xcodeProjectPath = path.join(projectRoot, 'platforms', 'ios', xcodeProjectName, 'project.pbxproj'),
     dylib = path.join(projectRoot, 'plugins', 'lfe.VideoStreamerCordovaPlugin', 'libxml2.dylib'),
-    xcodeProject;
+    xcodeProject,
+    swiftBridgingHead = '$(PROJECT_DIR)/${PRODUCT_NAME}/Plugins/lfe.VideoStreamerCordovaPlugin/TcpProxyClient-Swift.h',
+    swiftBridgingHeadXcode = '"' + swiftBridgingHead + '"',
+    xcodeOptions = [''];
 
   // Checking if the project files are in the right place
   if (!fs.existsSync(xcodeProjectPath)) {
@@ -58,7 +70,16 @@ module.exports = function (context) {
   }
   debug('".xcconfig" project file found: ' + xcconfigPath);
 
+
   xcodeProject = xcode.project(xcodeProjectPath);
+
+  xcodeOptions.push('LD_RUNPATH_SEARCH_PATHS = ' + RUNPATH_SEARCH_PATHS);
+  xcodeOptions.push('SWIFT_OBJC_BRIDGING_HEADER = ' + swiftBridgingHead);
+  xcodeOptions.push('IPHONEOS_DEPLOYMENT_TARGET = ' + BUILD_VERSION);
+  xcodeOptions.push('ENABLE_BITCODE = '+ ENABLE_BITCODE);
+  xcodeOptions.push('SWIFT_OBJC_INTERFACE_HEADER_NAME = '+ INTERFACE_HEADER);
+
+  fs.appendFileSync(xcconfigPath, xcodeOptions.join('\n'));
 
   // "project.pbxproj"
   // Parsing it
@@ -83,7 +104,7 @@ module.exports = function (context) {
 
         for(var option in header){
           lastKey = option;
-          debug(lastKey);
+          
           newHeadersPath[option] = header[option];
         }
 
@@ -98,6 +119,12 @@ module.exports = function (context) {
         a[4] = '"\\"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include\\""'
 
         buildSettings.HEADER_SEARCH_PATHS = a;
+
+        buildSettings.LD_RUNPATH_SEARCH_PATHS = RUNPATH_SEARCH_PATHS_XCODE;
+        buildSettings.SWIFT_OBJC_BRIDGING_HEADER = swiftBridgingHeadXcode;
+        buildSettings.IPHONEOS_DEPLOYMENT_TARGET = BUILD_VERSION_XCODE;
+        buildSettings.ENABLE_BITCODE = ENABLE_BITCODE_XCODE;
+        buildSettings.SWIFT_OBJC_INTERFACE_HEADER_NAME = INTERFACE_HEADER_XCODE;
       }
     });
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -25,7 +25,6 @@
                     <subviews>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="M4C-WS-bVQ">
                             <rect key="frame" x="-10" y="-10" width="20" height="20"/>
-                            <animations/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="37" id="5Om-oh-on2"/>
                                 <constraint firstAttribute="width" constant="37" id="74f-Ff-yVq"/>
@@ -44,7 +43,6 @@
                             </variation>
                         </activityIndicatorView>
                     </subviews>
-                    <animations/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstItem="M4C-WS-bVQ" firstAttribute="centerY" secondItem="ANh-GP-4sR" secondAttribute="centerY" id="AJ2-0G-ami"/>
@@ -74,7 +72,6 @@
                     <subviews>
                         <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jeh-Ce-Eav" userLabel="Background">
                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                            <animations/>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="123" id="IGD-EG-aSC"/>
@@ -92,7 +89,6 @@
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ovn-xC-hUf">
                             <rect key="frame" x="13" y="14" width="95" height="30"/>
-                            <animations/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="100" id="Uns-Md-aH9"/>
                                 <constraint firstAttribute="width" constant="100" id="ctO-Hz-W4I"/>
@@ -117,7 +113,6 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2K-Nq-h1s">
                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                            <animations/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="AFl-iv-dCX"/>
                                 <constraint firstAttribute="width" constant="30" id="Rhq-kZ-c8A"/>
@@ -146,7 +141,6 @@
                             </connections>
                         </button>
                     </subviews>
-                    <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="Jeh-Ce-Eav" firstAttribute="leading" secondItem="Fb0-Go-3oS" secondAttribute="leadingMargin" constant="-8" id="07d-tn-UHm"/>
@@ -172,12 +166,6 @@
                         </mask>
                         <mask key="constraints">
                             <exclude reference="U6n-H9-Ujv"/>
-                            <exclude reference="07d-tn-UHm"/>
-                            <exclude reference="3Sf-MW-PE7"/>
-                            <exclude reference="Yyk-17-VAi"/>
-                            <exclude reference="mGS-Se-K4F"/>
-                            <exclude reference="wY9-Vx-9cG"/>
-                            <exclude reference="yZL-ps-4gr"/>
                             <exclude reference="YV1-au-Wom"/>
                             <exclude reference="cNL-iW-bXf"/>
                             <exclude reference="1VH-1Q-GBn"/>
@@ -185,6 +173,12 @@
                             <exclude reference="TRu-xH-bVp"/>
                             <exclude reference="ss5-j5-Kel"/>
                             <exclude reference="yTI-hh-BeE"/>
+                            <exclude reference="07d-tn-UHm"/>
+                            <exclude reference="3Sf-MW-PE7"/>
+                            <exclude reference="Yyk-17-VAi"/>
+                            <exclude reference="mGS-Se-K4F"/>
+                            <exclude reference="wY9-Vx-9cG"/>
+                            <exclude reference="yZL-ps-4gr"/>
                         </mask>
                     </variation>
                     <variation key="heightClass=compact">
@@ -195,12 +189,6 @@
                         </mask>
                         <mask key="constraints">
                             <include reference="U6n-H9-Ujv"/>
-                            <include reference="07d-tn-UHm"/>
-                            <include reference="3Sf-MW-PE7"/>
-                            <include reference="Yyk-17-VAi"/>
-                            <include reference="mGS-Se-K4F"/>
-                            <include reference="wY9-Vx-9cG"/>
-                            <include reference="yZL-ps-4gr"/>
                             <exclude reference="YV1-au-Wom"/>
                             <exclude reference="cNL-iW-bXf"/>
                             <exclude reference="1VH-1Q-GBn"/>
@@ -208,11 +196,16 @@
                             <include reference="TRu-xH-bVp"/>
                             <exclude reference="ss5-j5-Kel"/>
                             <exclude reference="yTI-hh-BeE"/>
+                            <include reference="07d-tn-UHm"/>
+                            <include reference="3Sf-MW-PE7"/>
+                            <include reference="Yyk-17-VAi"/>
+                            <include reference="mGS-Se-K4F"/>
+                            <include reference="wY9-Vx-9cG"/>
+                            <include reference="yZL-ps-4gr"/>
                         </mask>
                     </variation>
                 </view>
             </subviews>
-            <animations/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="ANh-GP-4sR" firstAttribute="leading" secondItem="HL2-Jd-WoP" secondAttribute="leading" id="I5P-us-Ldb"/>

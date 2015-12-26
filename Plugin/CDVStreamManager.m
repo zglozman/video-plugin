@@ -29,12 +29,15 @@
     [self.viewController presentViewController:controller animated:YES completion:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             videomanager = [[VideoManager alloc] init];
-            [videomanager startHttpServer:^(NSDictionary *info) {
-                [controller startVideoStream];
-                
-                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
-                
-                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            
+            [videomanager startTcpConnect:@"https://prod.lackyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
+                [videomanager startHttpServer:globalPort callback:^(NSDictionary *info) {
+                    [controller startVideoStream];
+                    
+                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
+                    
+                    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                }];
             }];
         });
     }];

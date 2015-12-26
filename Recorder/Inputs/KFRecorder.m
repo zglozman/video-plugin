@@ -109,14 +109,14 @@ dispatch_queue_t socketQ;
     [_session beginConfiguration];
     _session.sessionPreset = AVCaptureSessionPreset1280x720;
     [_session commitConfiguration];
-
+    
     NSError *error = nil;
     AVCaptureDevice* videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-
+    
     if ([videoDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
         [videoDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
     }
-
+    
     AVCaptureDeviceInput* videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
     if (error) {
         NSLog(@"Error getting video input device: %@", error.description);
@@ -136,6 +136,10 @@ dispatch_queue_t socketQ;
         [_session addOutput:_videoOutput];
     }
     _videoConnection = [_videoOutput connectionWithMediaType:AVMediaTypeVideo];
+    
+    if ([_videoConnection isVideoOrientationSupported]) {
+        [_videoConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
+    }
 }
 
 #pragma mark KFEncoderDelegate method

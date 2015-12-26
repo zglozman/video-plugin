@@ -4386,7 +4386,7 @@ var WSAvcPlayer = new Class({
     this.ws = new WebSocket(url);
     this.ws.binaryType = "arraybuffer";
     this.ws.onopen = function() {
-      //console.log("WSAvcPlayer: Connected to " + url);
+      console.log("WSAvcPlayer: Connected to " + url);
     }.bind(this);
     this.ws.onmessage = function(evt) {
       if(typeof evt.data == "string")
