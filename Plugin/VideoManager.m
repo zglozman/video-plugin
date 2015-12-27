@@ -42,7 +42,7 @@
     }];
 }
 
-- (void)startHttpServer:(NSNumber *)port :(void (^)(NSDictionary *info))callback{
+- (void)startHttpServerWithPort:(NSNumber *)port callback:(void (^)(NSDictionary *))callback{
     [self copyFiles];
     
     NSError * error;

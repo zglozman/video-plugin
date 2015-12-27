@@ -30,11 +30,15 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             videomanager = [[VideoManager alloc] init];
             
-            [videomanager startTcpConnect:@"https://prod.lackyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
-                [videomanager startHttpServer:globalPort callback:^(NSDictionary *info) {
+            [videomanager startTcpConnect:@"https://prod.luckyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
+                NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
+                
+                [videomanager startHttpServerWithPort:globalPort callback:^(NSDictionary *info) {
                     [controller startVideoStream];
                     
-                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
+                    NSDictionary *response = @{@"global": global, @"local": info};
+                    
+                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
                     
                     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
                 }];

@@ -12,11 +12,68 @@
 #import "HTTPConnection.h"
 #import "HTTPDynamicFileResponse.h"
 #import "GCDAsyncSocket.h"
+#import "DDKeychain.h"
+
+
 // Log levels: off, error, warn, info, verbose
 // Other flags: trace
 
 
 @implementation HTTPConnectionHandler
+
+- (BOOL)isSecureServer
+{
+    //    HTTPLogTrace();
+    
+    // Create an HTTPS server (all connections will be secured via SSL/TLS)
+    return NO;
+}
+
+/**
+ * Overrides HTTPConnection's method
+ *
+ * This method is expected to returns an array appropriate for use in kCFStreamSSLCertificates SSL Settings.
+ * It should be an array of SecCertificateRefs except for the first element in the array, which is a SecIdentityRef.
+ **/
+- (NSArray *)sslIdentityAndCertificates
+{
+    //    HTTPLogTrace();
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    NSString * bundleCertPath = [basePath stringByAppendingPathComponent:@"cert/certificate.pfx"];
+    
+    SecIdentityRef identityRef = NULL;
+    SecCertificateRef certificateRef = NULL;
+    SecTrustRef trustRef = NULL;
+    NSString *thePath =bundleCertPath;
+    NSData *PKCS12Data = [[NSData alloc] initWithContentsOfFile:thePath];
+    CFDataRef inPKCS12Data = (__bridge CFDataRef)PKCS12Data;
+    CFStringRef password = CFSTR("beameio#");
+    const void *keys[] = { kSecImportExportPassphrase };
+    const void *values[] = { password };
+    CFDictionaryRef optionsDictionary = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    
+    OSStatus securityError = errSecSuccess;
+    securityError =  SecPKCS12Import(inPKCS12Data, optionsDictionary, &items);
+    if (securityError == 0) {
+        CFDictionaryRef myIdentityAndTrust = CFArrayGetValueAtIndex (items, 0);
+        const void *tempIdentity = NULL;
+        tempIdentity = CFDictionaryGetValue (myIdentityAndTrust, kSecImportItemIdentity);
+        identityRef = (SecIdentityRef)tempIdentity;
+        const void *tempTrust = NULL;
+        tempTrust = CFDictionaryGetValue (myIdentityAndTrust, kSecImportItemTrust);
+        trustRef = (SecTrustRef)tempTrust;
+    } else {
+        NSLog(@"Failed with error code %d",(int)securityError);
+        return nil;
+    }
+    
+    SecIdentityCopyCertificate(identityRef, &certificateRef);
+    NSArray *result = [[NSArray alloc] initWithObjects:(__bridge id)identityRef, (__bridge id)certificateRef, nil];
+    
+    return result;}
+
 
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
@@ -77,7 +134,7 @@
         }
         else
         {
-            wsLocation = [NSString stringWithFormat:@"ws://%@/service", wsHost];
+            wsLocation = [NSString stringWithFormat:@"wss://%@/service", wsHost];
         }
         
         NSDictionary *replacementDict = [NSDictionary dictionaryWithObject:wsLocation forKey:@"WEBSOCKET_URL"];
