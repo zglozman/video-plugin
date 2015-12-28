@@ -144,6 +144,10 @@
                                                        separator:@"%%"
                                            replacementDictionary:replacementDict];
         
+    } else if ([relativePath isEqualToString:@"/ping"]){
+        HTTPResponeWithHeaders *httpResp = [[HTTPResponeWithHeaders alloc] initWithData:[NSData data]];
+        
+        return httpResp;
     }
     
     return [super httpResponseForMethod:method URI:path];

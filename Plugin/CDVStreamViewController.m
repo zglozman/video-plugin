@@ -124,6 +124,7 @@
 }
 
 - (void) recorderDidFinishRecording:(KFRecorder *)recorder error:(NSError *)error {
+    NSLog(@"asdasd");
 }
 
 @end

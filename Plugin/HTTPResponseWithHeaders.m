@@ -15,7 +15,11 @@
 {
     NSString *key = @"Content-Type";
     NSString *value = @"text/xml";
-    return [NSDictionary dictionaryWithObjectsAndKeys:value, key, nil];
+    
+    NSString *key1 = @"Access-Control-Allow-Origin";
+    NSString *value1 = @"*";
+    
+    return [NSDictionary dictionaryWithObjectsAndKeys:value, key, value1, key1, nil];
 }
 
 

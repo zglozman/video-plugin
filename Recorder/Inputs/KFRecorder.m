@@ -114,7 +114,10 @@ dispatch_queue_t socketQ;
     AVCaptureDevice* videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     
     if ([videoDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        NSError *error;
+        [videoDevice lockForConfiguration:&error];
         [videoDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+        [videoDevice unlockForConfiguration];
     }
     
     AVCaptureDeviceInput* videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
