@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "HTTPResponeWithHeaders.h"
 
-@implementation  HTTPResponeWithHeaders
+@implementation  HTTPResponeWithHeaders{
+    BOOL allowOrigin;
+}
 
 - (NSDictionary *)httpHeaders
 {
@@ -19,8 +21,15 @@
     NSString *key1 = @"Access-Control-Allow-Origin";
     NSString *value1 = @"*";
     
-    return [NSDictionary dictionaryWithObjectsAndKeys:value, key, value1, key1, nil];
+    if (allowOrigin){
+        return [NSDictionary dictionaryWithObjectsAndKeys:value, key, value1, key1, nil];
+    } else {
+        return [NSDictionary dictionaryWithObjectsAndKeys:value, key, nil];
+    }
 }
 
+- (void)setAllowOrigin:(BOOL)state{
+    allowOrigin = state;
+}
 
 @end

@@ -11,6 +11,6 @@
 
 
 @interface 	HTTPResponeWithHeaders :  HTTPDataResponse
-
+- (void)setAllowOrigin:(BOOL)state;
 @end
 

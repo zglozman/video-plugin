@@ -134,7 +134,7 @@
         }
         else
         {
-            wsLocation = [NSString stringWithFormat:@"wss://%@/service", wsHost];
+            wsLocation = [NSString stringWithFormat:@"ws://%@/service", wsHost];
         }
         
         NSDictionary *replacementDict = [NSDictionary dictionaryWithObject:wsLocation forKey:@"WEBSOCKET_URL"];
@@ -146,6 +146,7 @@
         
     } else if ([relativePath isEqualToString:@"/ping"]){
         HTTPResponeWithHeaders *httpResp = [[HTTPResponeWithHeaders alloc] initWithData:[NSData data]];
+        [httpResp setAllowOrigin:YES];
         
         return httpResp;
     }

@@ -79,6 +79,7 @@ int frameIndex = 0;
     
     [[MyWebSocket sharedSocketsArray] removeObject:self];
     sendingFeed = false;
+    didSendInit = false;
     
 	HTTPLogTrace();
 	
