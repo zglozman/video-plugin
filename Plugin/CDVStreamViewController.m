@@ -30,6 +30,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
+    
     self.recorder = [[KFRecorder alloc] init];
     self.recorder.delegate = self;
 }
@@ -41,13 +43,21 @@
     [vieoPreview removeFromSuperlayer];
     vieoPreview.frame = self.preview.bounds;
     
-    if (self.recorder.isRecording){
-        [self.startIndicator setHidden:NO];
-    }
-    
     [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
     [self.preview.layer addSublayer:vieoPreview];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [self updateLoadIndicator];
+}
+
+- (void)updateLoadIndicator{
+    if (self.recorder.isRecording){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.startIndicator stopAnimating];
+        });
+    }
 }
 
 - (void)startVideoStream{
@@ -67,12 +77,20 @@
 - (AVCaptureVideoOrientation)interfaceOrientationToVideoOrientation:(UIInterfaceOrientation)orientation {
     switch (orientation) {
         case UIInterfaceOrientationPortrait:
+            [self.recorder setOrientation:@1];
+            
             return AVCaptureVideoOrientationPortrait;
         case UIInterfaceOrientationPortraitUpsideDown:
+            [self.recorder setOrientation:@4];
+            
             return AVCaptureVideoOrientationPortraitUpsideDown;
         case UIInterfaceOrientationLandscapeLeft:
+            [self.recorder setOrientation:@2];
+            
             return AVCaptureVideoOrientationLandscapeLeft;
         case UIInterfaceOrientationLandscapeRight:
+            [self.recorder setOrientation:@3];
+            
             return AVCaptureVideoOrientationLandscapeRight;
         default:
             break;
@@ -86,10 +104,16 @@
         [sender setSelected:YES];
         
         [self.recorder startRecording];
+        
+        //play
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnPauseCDVStreamViewController" object:nil];
     } else {
         [sender setSelected:NO];
         
         [self.recorder stopRecording];
+        
+        //pause
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnStartCDVStreamViewController" object:nil];
     }
 }
 
@@ -97,9 +121,19 @@
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.manager.serverStatus){
             [self.manager stopHttpServer:nil];
+            
+            if (self.recorder.isRecording){
+                [self toggleRecording:self.recordButton];
+            }
+        } else {
+            if (self.recorder.isRecording){
+                [self toggleRecording:self.recordButton];
+            }
         }
         
-        [self toggleRecording:self.recordButton];
+        self.recorder = nil;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseCDVStreamViewController" object:nil];
     }];
 }
 

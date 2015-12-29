@@ -35,7 +35,6 @@ int frameIndex = 0;
     [[MyWebSocket sharedSocketsArray] addObject:self];
         
     [super didOpen];
-	
 }
 
 - (void)didReceiveMessage:(NSString *)msg

@@ -140,9 +140,7 @@ dispatch_queue_t socketQ;
     }
     _videoConnection = [_videoOutput connectionWithMediaType:AVMediaTypeVideo];
     
-    if ([_videoConnection isVideoOrientationSupported]) {
-        [_videoConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
-    }
+    [self changeOrientationVideo];
 }
 
 #pragma mark KFEncoderDelegate method
@@ -262,6 +260,39 @@ dispatch_queue_t socketQ;
     }
 }
 
+- (void)changeOrientationVideo{
+    AVCaptureVideoOrientation orientation;
+    
+    switch ([self.orientation integerValue]) {
+        case 0:
+            orientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        case 1:
+            orientation = AVCaptureVideoOrientationPortrait;
+            break;
+        case 2:
+            orientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        case 3:
+            orientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case 4:
+            orientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        default:
+            orientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+    }
+    
+    if ([_videoConnection isVideoOrientationSupported]) {
+        [_videoConnection setVideoOrientation:orientation];
+    }
+}
 
+- (void)setOrientation:(NSNumber *)orientation{
+    _orientation = orientation;
+    
+    [self changeOrientationVideo];
+}
 
 @end

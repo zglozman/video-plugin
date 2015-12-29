@@ -46,6 +46,8 @@
 
 @property (nonatomic, weak) id<KFRecorderDelegate> delegate;
 
+@property (nonatomic) NSNumber *orientation; // 1 - portrait; 2/0 - landcape left; 3 - landscape right
+
 - (void) startRecording;
 - (void) stopRecording;
 
