@@ -149,9 +149,10 @@ dispatch_queue_t socketQ;
         KFVideoFrame *videoFrame = (KFVideoFrame*)frame;
         dispatch_async(socketQ, ^{
             
-            for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]) {
+            /*for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]) {
                 [socket sendFrame:videoFrame withWidth:self.videoWidth andHeight:self.videoHeight];
-            }
+            }*/
+            [[[MyWebSocket sharedSocketsArray] lastObject] sendFrame:videoFrame withWidth:self.videoWidth andHeight:self.videoHeight];
         });
        // NSLog(@"Recivied frame %d %d", frame.data.length, videoFrame.isKeyFrame);
 //        [_hlsWriter processEncodedData:videoFrame.data presentationTimestamp:videoFrame.pts streamIndex:0 isKeyFrame:videoFrame.isKeyFrame];

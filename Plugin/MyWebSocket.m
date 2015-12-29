@@ -33,7 +33,9 @@ int frameIndex = 0;
     NSLog(@"FrameSocket: didOpen");
     
     [[MyWebSocket sharedSocketsArray] addObject:self];
-        
+    
+    didSendInit = false;
+    
     [super didOpen];
 }
 
