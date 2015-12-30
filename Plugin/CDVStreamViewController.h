@@ -11,7 +11,6 @@
 #import "VideoManager.h"
 
 @interface CDVStreamViewController : UIViewController<KFRecorderDelegate>
-@property (nonatomic, strong) KFRecorder *recorder;
 @property VideoManager *manager;
 @property (weak, nonatomic) IBOutlet UIView *preview;
 @property (weak, nonatomic) IBOutlet UIButton *recordButton;

@@ -29,7 +29,7 @@
 }
 
 - (void)stopHttpServer:(void (^)())callback{
-    [httpServer stop];
+    //[httpServer stop];
 }
 
 - (void)startTcpConnect:(NSString *)host callback:(void (^)(NSString * globalIP, NSNumber * globalPort))callback{

@@ -10,6 +10,10 @@
 static const int httpLogLevel = HTTP_LOG_LEVEL_WARN | HTTP_LOG_FLAG_TRACE;
 
 
+@interface MyWebSocket ()
+@property BOOL didReceiveRequest;
+@end
+
 @implementation MyWebSocket
 
 bool didSendInit = false;
@@ -26,13 +30,29 @@ int frameIndex = 0;
     return theArray;
 }
 
+- (void)stopStream{
+    sendingFeed = false;
+    didSendInit = false;
+}
+
+- (void)startStream{
+    sendingFeed = true;
+}
 
 - (void)didOpen
 {
-	HTTPLogTrace();
+    HTTPLogTrace();
     NSLog(@"FrameSocket: didOpen");
     
+    static NSLock *lock;
+    
+    if (lock != nil){
+        lock = [[NSLock alloc] init];
+    }
+    
+    [lock lock];
     [[MyWebSocket sharedSocketsArray] addObject:self];
+    [lock unlock];
     
     didSendInit = false;
     
@@ -41,28 +61,24 @@ int frameIndex = 0;
 
 - (void)didReceiveMessage:(NSString *)msg
 {
-	NSLog(@"[%p]: didReceiveMessage: %@", self, msg);
-	
+    NSLog(@"[%p]: didReceiveMessage: %@", self, msg);
+    
     
     //Check and start stream or not
-
+    
     
     NSArray *splitMessage = [msg componentsSeparatedByString:@" "];
     if (splitMessage.count > 0) {
         NSString *action = [splitMessage objectAtIndex:0];
         if ([action isEqualToString:@"REQUESTSTREAM"]) {
             NSLog(@"FrameSocket: didStartStream");
-
+            
             sendingFeed = true;
-        } else if ([action isEqualToString:@"STOPSTREAM"]) {
-            NSLog(@"FrameSocket: didEndStream");
-
-            sendingFeed = false;
         }
     }
     
     [super didReceiveMessage:msg];
-
+    
 }
 
 - (void)didReceiveData:(NSData *)data {
@@ -76,42 +92,44 @@ int frameIndex = 0;
 - (void)didClose
 {
     NSLog(@"FrameSocket: didClose");
-
     
+    static NSLock *lock;
+    
+    if (lock != nil){
+        lock = [[NSLock alloc] init];
+    }
+    
+    [lock lock];
     [[MyWebSocket sharedSocketsArray] removeObject:self];
     sendingFeed = false;
     didSendInit = false;
+    [lock unlock];
     
-	HTTPLogTrace();
-	
-	[super didClose];
+    HTTPLogTrace();
+    
+    [super didClose];
 }
 
 - (void)sendFrame:(KFVideoFrame*)frame withWidth:(NSUInteger)width andHeight:(NSUInteger)height {
-    if (!didSendInit) {
-        
-        NSLog(@"FrameSocket: didSendInit");
-
-        didSendInit = true;
-        
-        NSDictionary *initDictionary = @{@"action": @"init",
-                                         @"width":[NSNumber numberWithInteger:width],
-                                         @"height":[NSNumber numberWithInteger:height]};
-        
-        [self sendMessage:[initDictionary bv_jsonStringWithPrettyPrint:false]];
-        
-    }
-
-    //Send if needed
-    if (sendingFeed) {
-//        if (frameIndex >= 999999 - 50) {
-//            frameIndex = 0;
-//        }
-//        NSLog(@"FrameSocket: didSendFrame(%d)(%d)WithLength:%lu", frame.isKeyFrame, frameIndex, (unsigned long)frame.data.length);
+    if (sendingFeed == true){
+        if(didSendInit == false) {
+            NSLog(@"FrameSocket: didSendInit");
+            
+            didSendInit = true;
+            
+            NSDictionary *initDictionary = @{@"action": @"init",
+                                             @"width":[NSNumber numberWithInteger:width],
+                                             @"height":[NSNumber numberWithInteger:height]};
+            
+            [self sendMessage:[initDictionary bv_jsonStringWithPrettyPrint:false]];
+        }
         
         [self sendBinaryData:frame.data];
     }
-    
+}
+
+- (void)dealloc{
+    NSLog(@"MyWebSocket Dealloc");
 }
 
 @end

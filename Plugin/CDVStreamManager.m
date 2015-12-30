@@ -11,6 +11,7 @@
 
 @implementation CDVStreamManager{
     VideoManager *videomanager;
+    CDVPluginResult *result;
 }
 
 - (CDVPlugin *)initWithWebView:(UIWebView *)theWebView{
@@ -28,21 +29,28 @@
     
     [self.viewController presentViewController:controller animated:YES completion:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            videomanager = [[VideoManager alloc] init];
-            
-            [videomanager startTcpConnect:@"https://prod.luckyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
-                NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
+            if (![videomanager serverStatus]){
                 
-                [videomanager startHttpServerWithPort:globalPort callback:^(NSDictionary *info) {
-                    [controller startVideoStream];
+                videomanager = [[VideoManager alloc] init];
+                
+                [videomanager startTcpConnect:@"https://prod.luckyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
+                    NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
                     
-                    NSDictionary *response = @{@"global": global, @"local": info};
-                    
-                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
-                    
-                    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                    [videomanager startHttpServerWithPort:globalPort callback:^(NSDictionary *info) {
+                        [controller startVideoStream];
+                        
+                        NSDictionary *response = @{@"global": global, @"local": info};
+                        
+                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
+                        
+                        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                    }];
                 }];
-            }];
+            } else {
+                [controller startVideoStream];
+                
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            }
         });
     }];
 }

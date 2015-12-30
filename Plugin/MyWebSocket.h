@@ -6,12 +6,13 @@
 
 @interface MyWebSocket : WebSocket
 {
-	
+    
 }
 
 +(NSMutableArray*) sharedSocketsArray;
 
 - (void)sendFrame:(KFVideoFrame*)frame withWidth:(NSUInteger)width andHeight:(NSUInteger)height;
 
-
+- (void)stopStream;
+- (void)startStream;
 @end

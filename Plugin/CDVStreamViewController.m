@@ -9,12 +9,15 @@
 #import "CDVStreamViewController.h"
 #import "VideoManager.h"
 
+#import "MyWebSocket.h"
 
 @interface CDVStreamViewController ()
+@property (nonatomic, strong) KFRecorder *recorder;
 @end
 
 @implementation CDVStreamViewController{
     AVCaptureVideoPreviewLayer* vieoPreview;
+    BOOL isStarting;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -26,18 +29,35 @@
     return self;
 }
 
++ (KFRecorder *)getRecorder{
+    static KFRecorder *recorder;
+    
+    if (recorder == nil){
+        recorder = [[KFRecorder alloc] init];
+    }
+    
+    return recorder;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
     
-    self.recorder = [[KFRecorder alloc] init];
+    self.recorder = [[self class] getRecorder];
+    
     self.recorder.delegate = self;
+    [self.recorder startRecording];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    self.recorder = [[self class] getRecorder];
     
     vieoPreview = self.recorder.previewLayer;
     [vieoPreview removeFromSuperlayer];
@@ -46,14 +66,12 @@
     [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
     [self.preview.layer addSublayer:vieoPreview];
-}
-
-- (void)viewDidAppear:(BOOL)animated{
+    
     [self updateLoadIndicator];
 }
 
 - (void)updateLoadIndicator{
-    if (self.recorder.isRecording){
+    if (isStarting){
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.startIndicator stopAnimating];
         });
@@ -100,38 +118,55 @@
 }
 
 - (IBAction)toggleRecording:(UIButton *)sender {
-    if (!self.recorder.isRecording) {
+    if (!isStarting) {
+        isStarting = YES;
+        
         [sender setSelected:YES];
         
-        [self.recorder startRecording];
+        [self startStream];
         
         //play
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OnPauseCDVStreamViewController" object:nil];
     } else {
+        isStarting = NO;
         [sender setSelected:NO];
         
-        [self.recorder stopRecording];
+        [self stopStream];
         
         //pause
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OnStartCDVStreamViewController" object:nil];
     }
 }
 
+- (void)startStream{
+    for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]){
+        [socket startStream];
+    }
+}
+
+- (void)stopStream{
+    for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]){
+        [socket stopStream];
+    }
+}
+
 - (IBAction)closeViewController:(id)sender {
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.manager.serverStatus){
+            [self stopStream];
+            
             [self.manager stopHttpServer:nil];
             
-            if (self.recorder.isRecording){
+            if (isStarting){
                 [self toggleRecording:self.recordButton];
             }
         } else {
-            if (self.recorder.isRecording){
+            [self stopStream];
+            
+            if (isStarting){
                 [self toggleRecording:self.recordButton];
             }
         }
-        
-        self.recorder = nil;
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseCDVStreamViewController" object:nil];
     }];
