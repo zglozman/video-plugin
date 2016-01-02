@@ -10,7 +10,6 @@
 #import "CDVStreamViewController.h"
 
 @implementation CDVStreamManager{
-    VideoManager *videomanager;
     CDVPluginResult *result;
 }
 
@@ -25,13 +24,18 @@
 
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
     CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
-    controller.manager = videomanager;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(reconnect) name:@"SOCKET_RECONNECT" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(unsleep) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(sleep) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
     [self.viewController presentViewController:controller animated:YES completion:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            VideoManager *videomanager = [[VideoManager alloc] init];
+            
             if (![videomanager serverStatus]){
-                
-                videomanager = [[VideoManager alloc] init];
+                controller.manager = videomanager;
                 
                 [videomanager startTcpConnect:@"https://prod.luckyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
                     NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
@@ -43,16 +47,17 @@
                         
                         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
                         
+                        NSLog(@"Start server callback");
                         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
                     }];
                 }];
             } else {
-                [controller startVideoStream];
-                
-                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                [videomanager stopHttpServer:nil];
             }
         });
     }];
+    
+    controller = nil;
 }
 
 - (void)closeStreamController:(CDVInvokedUrlCommand *)command{

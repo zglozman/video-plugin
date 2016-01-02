@@ -31,7 +31,7 @@ class TcpProxyClient: NSObject {
         self.onTcpConnected = onTcpConnected
         self.endPoint = endpoint
         
-        self.socket = SocketIOClient(socketURL: self.endPoint, options: [.Log(false), .Nsp("/TcpServerWS"), .ForceWebsockets(true)])
+        self.socket = SocketIOClient(socketURL: self.endPoint, options: [.Log(true), .Nsp("/TcpServerWS"), .ForceWebsockets(true)])
         
         NSLog("TcpProxyClient connecting to %@", self.endPoint)
         
@@ -47,7 +47,7 @@ class TcpProxyClient: NSObject {
             //self.handleTcpProxySendEvents(data, callback: { () -> Void in
             
             let lock: NSLock = NSLock()
-        
+            
             let dict: NSDictionary! = data[0] as! NSDictionary
             
             let realWorldClientPort: NSNumber? = dict.valueForKey("port") as? NSNumber
@@ -58,10 +58,10 @@ class TcpProxyClient: NSObject {
             if (self.onTcpConnected != nil){
                 self.onTcpConnected!(globalIP: realWorldClientIp!, globalPort: realWorldClientPort!)
             }
-
+            
             
             NSLog("http://%@:%@/Web/index.html", realWorldClientIp!, realWorldClientPort!.stringValue)
-                
+            
             self.socket!.on("create_connection") {data, ask in
                 let dict: NSDictionary! = data[0] as! NSDictionary
                 let serverSideSocketId: String!  = dict.valueForKey("tcpSocketId") as! String
@@ -107,6 +107,12 @@ class TcpProxyClient: NSObject {
                 }
             }
             
+            self.socket!.on("reconnect"){ data, ask in
+                NSNotificationCenter.defaultCenter().postNotificationName("SOCKET_RECONNECT", object: self.socket)
+                
+                NSLog("Reconnecting")
+            }
+            
             self.socket!.on("end") { data, ask in
                 NSLog("TCP Client disconnected from remote server")
                 
@@ -119,9 +125,13 @@ class TcpProxyClient: NSObject {
                 
             }
             self.socket!.on("error") {data, ask in
-                NSLog("SocketIO Error")
+                
+                //let dict: String = data[1] as! String
+                //let a: NSString! = NSString(data: b, encoding: NSUTF8StringEncoding)
+                
+                NSLog("SocketIO Error %@", dict)
                 lock.lock()
-                for (index, value) in self.sockets.enumerate() {
+                for (_, value) in self.sockets.enumerate() {
                     let sock: TcpAsyncSocket = value as TcpAsyncSocket
                     sock.disconnect()
                     
@@ -182,5 +192,25 @@ class TcpProxyClient: NSObject {
                 break
             }
         }
+    }
+    
+    func disconnectAllSockets() -> Void{
+        for (_, value) in self.sockets.enumerate() {
+            let socket: TcpAsyncSocket = value as TcpAsyncSocket
+            
+            
+            NSLog("AsyncSocket call disckonnect")
+            
+            socket.disconnect();
+        }
+        
+        if (self.socket != nil){
+            NSLog("Socket call disckonnect")
+            self.socket!.close();
+        }
+    }
+    
+    deinit {
+        self.disconnectAllSockets();
     }
 }

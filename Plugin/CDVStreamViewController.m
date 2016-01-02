@@ -11,6 +11,9 @@
 
 #import "MyWebSocket.h"
 
+
+static KFRecorder *recorder;
+
 @interface CDVStreamViewController ()
 @property (nonatomic, strong) KFRecorder *recorder;
 @end
@@ -18,6 +21,7 @@
 @implementation CDVStreamViewController{
     AVCaptureVideoPreviewLayer* vieoPreview;
     BOOL isStarting;
+    BOOL isClosing;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -30,8 +34,6 @@
 }
 
 + (KFRecorder *)getRecorder{
-    static KFRecorder *recorder;
-    
     if (recorder == nil){
         recorder = [[KFRecorder alloc] init];
     }
@@ -151,11 +153,17 @@
 }
 
 - (IBAction)closeViewController:(id)sender {
+    isClosing = YES;
+    
+    [self closeController];
+}
+
+- (void)closeController{
+    self.manager = nil;
+    
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.manager.serverStatus){
             [self stopStream];
-            
-            [self.manager stopHttpServer:nil];
             
             if (isStarting){
                 [self toggleRecording:self.recordButton];
@@ -167,9 +175,9 @@
                 [self toggleRecording:self.recordButton];
             }
         }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseCDVStreamViewController" object:nil];
     }];
+    
+    [recorder stopRecording];
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {
@@ -194,6 +202,21 @@
 
 - (void) recorderDidFinishRecording:(KFRecorder *)recorder error:(NSError *)error {
     
+}
+
+- (void)sleep{
+    [self closeController];
+}
+
+- (void)reconnect{
+    
+}
+
+- (void)unsleep{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        recorder = nil;
+        recorder = [[KFRecorder alloc] init];
+    });
 }
 
 @end

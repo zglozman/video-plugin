@@ -14,7 +14,7 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
     
     var serverSideSocketId: String?
     var asyncSocket: GCDAsyncSocket?
-
+    
     // callback
     var onAsyncConnect: ((sockConnect: TcpAsyncSocket) -> Void)?
     var onAsyncErrorConnect: ((sock: TcpAsyncSocket) -> Void)?
@@ -31,7 +31,7 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
     }
     
     func connect(host: String!, onPort: UInt16, socketId: String!, onConnect: (sockConnect: TcpAsyncSocket) -> Void, onErrorConnect: (sock: TcpAsyncSocket) -> Void){
-    
+        
         
         let random: NSNumber! = NSNumber(unsignedInt: arc4random())
         
@@ -51,7 +51,7 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
         }
         self.asyncSocket!.readDataWithTimeout(self.TIMEOUT, tag:self.TAG )
     }
-
+    
     func write(data: NSData!, withTag: Int!){
         let a: NSString? = NSString(data: data, encoding: NSUTF8StringEncoding)
         
@@ -69,7 +69,9 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
     }
     
     func disconnect(){
-        self.onDidDisconnect!(sock: self)
+        self.asyncSocket!.disconnectAfterReadingAndWriting();
+        
+        //self.onDidDisconnect!(sock: self)
     }
     
     func errorConnect(){
@@ -77,7 +79,7 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
         
         NSLog("Async error connect: %@", self.serverSideSocketId!)
     }
-
+    
     func socketDidDisconnect(sock: GCDAsyncSocket!, withError err: NSError!) {
         NSLog("onDidDisconnect: %@", err)
         self.onDidDisconnect!(sock: self);
@@ -91,17 +93,17 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
     func socket(sock: GCDAsyncSocket!, didReadData data: NSData!, withTag tag: Int) {
         let lenght: NSNumber = NSNumber(integer: data.length)
         
-//        self.asyncSocket!.readDataToData(data, withTimeout:15, tag: 1)
+        //        self.asyncSocket!.readDataToData(data, withTimeout:15, tag: 1)
         //        self.asyncSocket!.readDataToLength(lenght.unsignedIntegerValue, withTimeout:self.TIMEOUT, tag: self.TAG )
         
         //let a: NSData = data
-//        let s: NSString! = NSString(data: data, encoding: NSUTF8StringEncoding)
+        //        let s: NSString! = NSString(data: data, encoding: NSUTF8StringEncoding)
         NSLog("Reading data from socket: %d", lenght.unsignedIntegerValue)
         dispatch_async(dispatch_get_main_queue(), {
             self.asyncSocket!.readDataWithTimeout(-1, tag: self.TAG);
         });
         self.onRead!(sock: self, data: data, withTag: self.TAG )
-
+        
     }
     
     
