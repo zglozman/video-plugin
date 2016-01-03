@@ -12,7 +12,7 @@
 #import "MyWebSocket.h"
 
 
-static KFRecorder *recorder;
+static KFRecorder *recorder = nil;
 
 @interface CDVStreamViewController ()
 @property (nonatomic, strong) KFRecorder *recorder;
@@ -46,11 +46,11 @@ static KFRecorder *recorder;
     // Do any additional setup after loading the view, typically from a nib.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartVideoStream) name:@"STARTSTREAM" object:nil];
     
-    self.recorder = [[self class] getRecorder];
+    [[self class] getRecorder];
     
-    self.recorder.delegate = self;
-    [self.recorder startRecording];
+    recorder.delegate = self;
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -59,15 +59,14 @@ static KFRecorder *recorder;
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    self.recorder = [[self class] getRecorder];
+    [vieoPreview removeFromSuperlayer];
     
-    vieoPreview = self.recorder.previewLayer;
+    vieoPreview = recorder.previewLayer;
     [vieoPreview removeFromSuperlayer];
     vieoPreview.frame = self.preview.bounds;
     
     [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
-    [self.preview.layer addSublayer:vieoPreview];
     
     [self updateLoadIndicator];
 }
@@ -81,8 +80,18 @@ static KFRecorder *recorder;
 }
 
 - (void)startVideoStream{
+    if ([recorder isRecording]){
+        [self didStartVideoStream];
+    } else {
+        [recorder startRecording];
+    }
+}
+
+- (void)didStartVideoStream{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.startIndicator setHidden:YES];
+        
+        [self.preview.layer addSublayer:vieoPreview];
         
         [self toggleRecording:self.recordButton];
     });
@@ -97,19 +106,19 @@ static KFRecorder *recorder;
 - (AVCaptureVideoOrientation)interfaceOrientationToVideoOrientation:(UIInterfaceOrientation)orientation {
     switch (orientation) {
         case UIInterfaceOrientationPortrait:
-            [self.recorder setOrientation:@1];
+            [recorder setOrientation:@1];
             
             return AVCaptureVideoOrientationPortrait;
         case UIInterfaceOrientationPortraitUpsideDown:
-            [self.recorder setOrientation:@4];
+            [recorder setOrientation:@4];
             
             return AVCaptureVideoOrientationPortraitUpsideDown;
         case UIInterfaceOrientationLandscapeLeft:
-            [self.recorder setOrientation:@2];
+            [recorder setOrientation:@2];
             
             return AVCaptureVideoOrientationLandscapeLeft;
         case UIInterfaceOrientationLandscapeRight:
-            [self.recorder setOrientation:@3];
+            [recorder setOrientation:@3];
             
             return AVCaptureVideoOrientationLandscapeRight;
         default:
@@ -153,31 +162,61 @@ static KFRecorder *recorder;
 }
 
 - (IBAction)closeViewController:(id)sender {
-    isClosing = YES;
+    //[self closeController];
     
-    [self closeController];
+    if (self != nil){
+        [recorder stopRecording];
+        
+        [self stopStream];
+        
+        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
+            [s stop];
+            
+            [[MyWebSocket sharedSocketsArray] removeObject:s];
+        }
+        
+        //[[MyWebSocket sharedSocketsArray] removeAllObjects];
+        
+        [self.manager stopHttpServer:nil];
+        self.manager = nil;
+    }
+    
+    //[self closeViewController:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+        if (isStarting){
+            [self toggleRecording:self.recordButton];
+        }
+    }];
 }
 
 - (void)closeController{
-    self.manager = nil;
+    if (self != nil){
+        if (recorder.isRecording){
+            [recorder stopRecording];
+        }
+        recorder = nil;
+        [self stopStream];
+        
+        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
+            [s stop];
+            
+            [[MyWebSocket sharedSocketsArray] removeObject:s];
+        }
+        
+        //[[MyWebSocket sharedSocketsArray] removeAllObjects];
+        
+        [self.manager stopHttpServer:nil];
+        self.manager = nil;
+    }
     
+    //[self closeViewController:nil];
     [self dismissViewControllerAnimated:YES completion:^{
-        if (self.manager.serverStatus){
-            [self stopStream];
-            
-            if (isStarting){
-                [self toggleRecording:self.recordButton];
-            }
-        } else {
-            [self stopStream];
-            
-            if (isStarting){
-                [self toggleRecording:self.recordButton];
-            }
+        
+        if (isStarting){
+            [self toggleRecording:self.recordButton];
         }
     }];
-    
-    [recorder stopRecording];
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {
@@ -206,6 +245,9 @@ static KFRecorder *recorder;
 
 - (void)sleep{
     [self closeController];
+    
+    //    recorder = nil;
+    //recorder = [[KFRecorder alloc] init];
 }
 
 - (void)reconnect{
@@ -213,10 +255,10 @@ static KFRecorder *recorder;
 }
 
 - (void)unsleep{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        recorder = nil;
-        recorder = [[KFRecorder alloc] init];
-    });
+    /*dispatch_async(dispatch_get_main_queue(), ^{
+     recorder = nil;
+     recorder = [[KFRecorder alloc] init];
+     });*/
 }
 
 @end

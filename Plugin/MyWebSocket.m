@@ -73,6 +73,8 @@ int frameIndex = 0;
         if ([action isEqualToString:@"REQUESTSTREAM"]) {
             NSLog(@"FrameSocket: didStartStream");
             
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"STARTSTREAM" object:nil];
+            
             sendingFeed = true;
         }
     }
@@ -122,9 +124,15 @@ int frameIndex = 0;
                                              @"height":[NSNumber numberWithInteger:height]};
             
             [self sendMessage:[initDictionary bv_jsonStringWithPrettyPrint:false]];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"DIDSENDINIT" object:self];
         }
         
+        frameIndex++;
+        
+        //if (frameIndex > 150){
         [self sendBinaryData:frame.data];
+        //}
     }
 }
 
