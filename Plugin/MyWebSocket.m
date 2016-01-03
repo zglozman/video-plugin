@@ -124,6 +124,8 @@ int frameIndex = 0;
                                              @"height":[NSNumber numberWithInteger:height]};
             
             [self sendMessage:[initDictionary bv_jsonStringWithPrettyPrint:false]];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"DIDSENDINIT" object:self];
         }
         
         frameIndex++;

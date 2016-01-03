@@ -9,8 +9,11 @@
 #import "CDVStreamManager.h"
 #import "CDVStreamViewController.h"
 
+#import "MyWebSocket.h"
+
 @implementation CDVStreamManager{
     CDVPluginResult *result;
+    VideoManager *videomanager;
 }
 
 - (CDVPlugin *)initWithWebView:(UIWebView *)theWebView{
@@ -25,23 +28,27 @@
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
     CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
     
-    [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(reconnect) name:@"SOCKET_RECONNECT" object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(unsleep) name:UIApplicationDidBecomeActiveNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(unsleep) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(sleep) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
     [self.viewController presentViewController:controller animated:YES completion:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            VideoManager *videomanager = [[VideoManager alloc] init];
+            if (videomanager == nil){
+                videomanager = [[VideoManager alloc] init];
+            }
             
-            if (![videomanager serverStatus]){
+            if (videomanager.serverStatus == NO){
                 controller.manager = videomanager;
+                controller.closeCallback = ^(){
+                    CDVPluginResult *error = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+                    [self.commandDelegate sendPluginResult:error callbackId:command.callbackId];
+                };
                 
                 [videomanager startTcpConnect:@"https://prod.luckyqr.io" callback:^(NSString *globalIP, NSNumber *globalPort) {
                     NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
                     
                     [videomanager startHttpServerWithPort:globalPort callback:^(NSDictionary *info) {
-                        //[controller startVideoStream];
+                        [controller startVideoStream];
                         
                         NSDictionary *response = @{@"global": global, @"local": info};
                         
@@ -52,7 +59,7 @@
                     }];
                 }];
             } else {
-                [videomanager stopHttpServer:nil];
+                [controller startVideoStream];
             }
         });
     }];

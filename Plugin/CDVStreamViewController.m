@@ -46,7 +46,7 @@ static KFRecorder *recorder;
     // Do any additional setup after loading the view, typically from a nib.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startVideoStream) name:@"STARTSTREAM" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartVideoStream) name:@"STARTSTREAM" object:nil];
     
     self.recorder = [[self class] getRecorder];
     
@@ -68,7 +68,6 @@ static KFRecorder *recorder;
     
     [self willRotateToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0];
     
-    [self.preview.layer addSublayer:vieoPreview];
     
     [self updateLoadIndicator];
 }
@@ -82,9 +81,20 @@ static KFRecorder *recorder;
 }
 
 - (void)startVideoStream{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
+    if ([self.recorder isRecording]){
+        [self didStartVideoStream];
+    } else {
         [self.recorder startRecording];
+    }
+}
+
+- (void)didStartVideoStream{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.startIndicator setHidden:YES];
+        
+        [self.preview.layer addSublayer:vieoPreview];
+        
+        [self toggleRecording:self.recordButton];
     });
 }
 
@@ -155,31 +165,29 @@ static KFRecorder *recorder;
 - (IBAction)closeViewController:(id)sender {
     isClosing = YES;
     
-    [self closeController];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self stopStream];
+        
+        if (isStarting){
+            [self toggleRecording:self.recordButton];
+        }
+    }];
 }
 
 - (void)closeController{
-    self.manager = nil;
-    
-    [self dismissViewControllerAnimated:YES completion:^{
-        if (self.manager.serverStatus){
-            [self stopStream];
-            
-            if (isStarting){
-                [self toggleRecording:self.recordButton];
-            }
-        } else {
-            [self stopStream];
-            
-            if (isStarting){
-                [self toggleRecording:self.recordButton];
-            }
+    if (self != nil){
+        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
+            [s stop];
         }
         
         [[MyWebSocket sharedSocketsArray] removeAllObjects];
-    }];
+        
+        [self.recorder stopRecording];
+        [self.manager stopHttpServer:nil];
+        self.manager = nil;
+    }
     
-    [recorder stopRecording];
+    [self closeViewController:nil];
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {
@@ -196,11 +204,6 @@ static KFRecorder *recorder;
         }
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Stream Start Error" message:errorMsg delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [alertView show];
-    } else {
-        
-        [self.startIndicator setHidden:YES];
-        
-        [self toggleRecording:self.recordButton];
     }
 }
 
@@ -213,6 +216,9 @@ static KFRecorder *recorder;
 
 - (void)sleep{
     [self closeController];
+    
+    recorder = nil;
+    //recorder = [[KFRecorder alloc] init];
 }
 
 - (void)reconnect{

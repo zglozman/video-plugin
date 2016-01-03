@@ -22,6 +22,7 @@
 
 @implementation VideoManager{
     HTTPServer *httpServer;
+    TcpProxyClient *client;
 }
 
 - (BOOL)serverStatus{
@@ -29,11 +30,13 @@
 }
 
 - (void)stopHttpServer:(void (^)())callback{
-    //[httpServer stop];
+    [client disconnectAllSockets];
+    [httpServer stop];
+    httpServer = nil;
 }
 
 - (void)startTcpConnect:(NSString *)host callback:(void (^)(NSString * globalIP, NSNumber * globalPort))callback{
-    TcpProxyClient *client = [[TcpProxyClient alloc] init];
+    client = [[TcpProxyClient alloc] init];
     
     [client connect:host onConnect:^{
         [client createPublicTcpServer];

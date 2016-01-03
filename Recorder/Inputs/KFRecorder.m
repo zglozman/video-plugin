@@ -31,7 +31,7 @@
 @interface KFRecorder()
 @property (nonatomic) double minBitrate;
 @property (nonatomic) BOOL hasScreenshot;
-
+@property KFVideoFrame *lastFrame;
 @end
 
 @implementation KFRecorder {
@@ -47,12 +47,23 @@ dispatch_queue_t socketQ;
         [self setupEncoders];
     }
     
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendLastFrame:) name:@"DIDSENDINIT" object:nil];
+    
     static dispatch_once_t queueCreationGuard;
     dispatch_once(&queueCreationGuard, ^{
         socketQ = dispatch_queue_create("com.lfe.backgroundQueue.socket", 0);
     });
     
     return self;
+}
+
+- (void)sendLastFrame:(NSNotification *)notification{
+    NSLog(@"Send Last Frame %@", self.lastFrame);
+    
+    MyWebSocket *socket = notification.object;
+    
+    [socket sendFrame:self.lastFrame withWidth:self.videoWidth andHeight:self.videoHeight];
 }
 
 - (AVCaptureDevice *)audioDevice
@@ -66,8 +77,8 @@ dispatch_queue_t socketQ;
 
 - (void) setupEncoders {
     self.audioSampleRate = 44100;
-    self.videoHeight = 720;
-    self.videoWidth = 1280;
+    self.videoHeight = 540;
+    self.videoWidth = 960;
     int audioBitrate = 64 * 1000; // 64 Kbps
     int maxBitrate = 1000 * 1000; // 1000 mbps
     int videoBitrate = maxBitrate - audioBitrate;
@@ -148,11 +159,14 @@ dispatch_queue_t socketQ;
     if (encoder == _h264Encoder) {
         KFVideoFrame *videoFrame = (KFVideoFrame*)frame;
         dispatch_async(socketQ, ^{
+            if(videoFrame.isKeyFrame){
+                self.lastFrame = videoFrame;
+                NSLog(@"Last frame is assigned ");
+            }
             
-            /*for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]) {
+            for (MyWebSocket *socket in [MyWebSocket sharedSocketsArray]) {
                 [socket sendFrame:videoFrame withWidth:self.videoWidth andHeight:self.videoHeight];
-            }*/
-            [[[MyWebSocket sharedSocketsArray] lastObject] sendFrame:videoFrame withWidth:self.videoWidth andHeight:self.videoHeight];
+            }
         });
        // NSLog(@"Recivied frame %d %d", frame.data.length, videoFrame.isKeyFrame);
 //        [_hlsWriter processEncodedData:videoFrame.data presentationTimestamp:videoFrame.pts streamIndex:0 isKeyFrame:videoFrame.isKeyFrame];
