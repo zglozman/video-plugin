@@ -41,7 +41,7 @@
                     NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
                     
                     [videomanager startHttpServerWithPort:globalPort callback:^(NSDictionary *info) {
-                        [controller startVideoStream];
+                        //[controller startVideoStream];
                         
                         NSDictionary *response = @{@"global": global, @"local": info};
                         

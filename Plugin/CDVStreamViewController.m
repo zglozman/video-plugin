@@ -46,11 +46,11 @@ static KFRecorder *recorder;
     // Do any additional setup after loading the view, typically from a nib.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startVideoStream) name:@"STARTSTREAM" object:nil];
     
     self.recorder = [[self class] getRecorder];
     
     self.recorder.delegate = self;
-    [self.recorder startRecording];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -60,6 +60,7 @@ static KFRecorder *recorder;
 
 - (void)viewDidAppear:(BOOL)animated{
     self.recorder = [[self class] getRecorder];
+    [vieoPreview removeFromSuperlayer];
     
     vieoPreview = self.recorder.previewLayer;
     [vieoPreview removeFromSuperlayer];
@@ -82,9 +83,8 @@ static KFRecorder *recorder;
 
 - (void)startVideoStream{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.startIndicator setHidden:YES];
         
-        [self toggleRecording:self.recordButton];
+        [self.recorder startRecording];
     });
 }
 
@@ -175,6 +175,8 @@ static KFRecorder *recorder;
                 [self toggleRecording:self.recordButton];
             }
         }
+        
+        [[MyWebSocket sharedSocketsArray] removeAllObjects];
     }];
     
     [recorder stopRecording];
@@ -194,6 +196,11 @@ static KFRecorder *recorder;
         }
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Stream Start Error" message:errorMsg delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [alertView show];
+    } else {
+        
+        [self.startIndicator setHidden:YES];
+        
+        [self toggleRecording:self.recordButton];
     }
 }
 
