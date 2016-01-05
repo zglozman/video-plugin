@@ -209,8 +209,4 @@ class TcpProxyClient: NSObject {
             self.socket!.close();
         }
     }
-    
-    deinit {
-        self.disconnectAllSockets();
-    }
 }

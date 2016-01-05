@@ -71,7 +71,7 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
     func disconnect(){
         self.asyncSocket!.disconnectAfterReadingAndWriting();
         
-        //self.onDidDisconnect!(sock: self)
+        self.onDidDisconnect!(sock: self)
     }
     
     func errorConnect(){
@@ -79,11 +79,11 @@ class TcpAsyncSocket: NSObject, GCDAsyncSocketDelegate{
         
         NSLog("Async error connect: %@", self.serverSideSocketId!)
     }
-    
+    /*
     func socketDidDisconnect(sock: GCDAsyncSocket!, withError err: NSError!) {
         NSLog("onDidDisconnect: %@", err)
         self.onDidDisconnect!(sock: self);
-    }
+    }*/
     
     func socket(sock: GCDAsyncSocket!, didConnectToHost host: String!, port: UInt16) {
         NSLog("Async didConnectToHost: %@", self.serverSideSocketId!)
