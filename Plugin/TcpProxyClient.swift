@@ -19,14 +19,14 @@ class TcpProxyClient: NSObject {
     var socket: SocketIOClient?
     var sockets: Array<TcpAsyncSocket> = Array<TcpAsyncSocket>()
     
-    var onTcpConnected: ((globalIP: String, globalPort: NSNumber) -> Void)?
+    var onTcpConnected: ((globalIP: String, globalPort: NSNumber, localPort: NSNumber) -> Void)?
     
     override init() {
         self.endPoint = ""
         super.init()
     }
     
-    func connect(endpoint: String!, onConnect: () -> Void, onTcpConnected: (globalIP: String, globalPort: NSNumber) -> Void) {
+    func connect(endpoint: String!, localPort: NSNumber, onConnect: () -> Void, onTcpConnected: (globalIP: String, globalPort: NSNumber, localPort: NSNumber) -> Void) {
         
         self.onTcpConnected = onTcpConnected
         self.endPoint = endpoint
@@ -56,7 +56,7 @@ class TcpProxyClient: NSObject {
             self.port = realWorldClientPort
             
             if (self.onTcpConnected != nil){
-                self.onTcpConnected!(globalIP: realWorldClientIp!, globalPort: realWorldClientPort!)
+                self.onTcpConnected!(globalIP: realWorldClientIp!, globalPort: realWorldClientPort!, localPort: localPort)
             }
             
             
