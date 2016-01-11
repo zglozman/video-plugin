@@ -11,6 +11,7 @@ import UIKit
 class TcpProxyClient: NSObject {
     var host: String? = "localhost"
     var port: NSNumber?
+    var localPort: NSNumber?
     
     var endPoint: String
     var connected: Bool = false
@@ -30,6 +31,7 @@ class TcpProxyClient: NSObject {
         
         self.onTcpConnected = onTcpConnected
         self.endPoint = endpoint
+        self.localPort = localPort
         
         self.socket = SocketIOClient(socketURL: self.endPoint, options: [.Log(true), .Nsp("/TcpServerWS"), .ForceWebsockets(true)])
         
@@ -71,7 +73,7 @@ class TcpProxyClient: NSObject {
                 let asyncSocket = TcpAsyncSocket()
                 self.atomicAddSocketToArray(asyncSocket, sockets_array: &self.sockets, lock: lock)
                 
-                asyncSocket.connect(self.host, onPort: self.port!.unsignedShortValue, socketId: serverSideSocketId, onConnect: { (sockConnect: TcpAsyncSocket) -> Void in
+                asyncSocket.connect(self.host, onPort: self.localPort!.unsignedShortValue, socketId: serverSideSocketId, onConnect: { (sockConnect: TcpAsyncSocket) -> Void in
                     //on data
                     asyncSocket.onRead = { (sock: TcpAsyncSocket, data: NSData, withTag: Int) in
                         NSLog("onAsyncSocketRead: id: %@", sock.serverSideSocketId!)
