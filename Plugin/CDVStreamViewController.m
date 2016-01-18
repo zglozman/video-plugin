@@ -45,6 +45,8 @@ static KFRecorder *recorder = nil;
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeViewController:) name:@"CloseStreamController" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartVideoStream) name:@"STARTSTREAM" object:nil];
     
@@ -162,36 +164,13 @@ static KFRecorder *recorder = nil;
 }
 
 - (IBAction)closeViewController:(id)sender {
-    //[self closeController];
-    
-    if (self != nil){
-        [recorder stopRecording];
-        
-        [self stopStream];
-        
-        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
-            [s stop];
-            
-            [[MyWebSocket sharedSocketsArray] removeObject:s];
-        }
-        
-        //[[MyWebSocket sharedSocketsArray] removeAllObjects];
-        
-        [self.manager stopHttpServer:nil];
-        self.manager = nil;
-    }
-    
-    //[self closeViewController:nil];
-    [self dismissViewControllerAnimated:YES completion:^{
-        
-        if (isStarting){
-            [self toggleRecording:self.recordButton];
-        }
-    }];
+    [self closeController];
 }
 
 - (void)closeController{
     if (self != nil){
+        [UIApplication sharedApplication].idleTimerDisabled = NO;
+        
         if (recorder.isRecording){
             [recorder stopRecording];
         }
