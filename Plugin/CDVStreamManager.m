@@ -47,7 +47,7 @@
                         [self.commandDelegate sendPluginResult:error callbackId:command.callbackId];
                     };
                     
-                    [videomanager startTcpConnect:@"https://staging.luckyqr.io" andLocalPort:@80 callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
+                    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:@80 callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
                         NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
                         
                         [videomanager startHttpServerWithPort:localPort callback:^(NSDictionary *info) {

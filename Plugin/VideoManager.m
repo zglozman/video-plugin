@@ -109,30 +109,40 @@
     //        NSArray * directoryContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsWebPath error:&error];
 }
 
-- (NSString *)getIPAddress {
-    NSString *address = @"error";
+- (NSString *)getIPAddress{
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
-    int success = 0;
+    NSString *wifiAddress = nil;
+    NSString *cellAddress = nil;
+    
     // retrieve the current interfaces - returns 0 on success
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
+    if(!getifaddrs(&interfaces)) {
         // Loop through linked list of interfaces
         temp_addr = interfaces;
         while(temp_addr != NULL) {
-            if(temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone
-                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                }
+            sa_family_t sa_type = temp_addr->ifa_addr->sa_family;
+            if(sa_type == AF_INET || sa_type == AF_INET6) {
+                NSString *name = [NSString stringWithUTF8String:temp_addr->ifa_name];
+                NSString *addr = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)]; // pdp_ip0
+                //NSLog(@"NAME: \"%@\" addr: %@", name, addr); // see for yourself
+                
+                if([name isEqualToString:@"en0"]) {
+                    // Interface is the wifi connection on the iPhone
+                    wifiAddress = addr;
+                } else
+                    if([name isEqualToString:@"pdp_ip0"]) {
+                        // Interface is the cell connection on the iPhone
+                        cellAddress = addr;
+                    }
             }
             temp_addr = temp_addr->ifa_next;
         }
+        // Free memory
+        freeifaddrs(interfaces);
     }
-    // Free memory
-    freeifaddrs(interfaces);
-    return address;
+    NSString *addr = wifiAddress ? wifiAddress : cellAddress;
     
+    return addr;
 }
+
 @end
