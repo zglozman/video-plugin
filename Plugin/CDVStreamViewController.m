@@ -163,8 +163,26 @@ static KFRecorder *recorder = nil;
     }
 }
 
-- (IBAction)closeViewController:(id)sender {
-    [self closeController];
+- (IBAction)closeViewController:(id)sender { 
+    if (self != nil){
+        [recorder stopRecording];     
+        [self stopStream];
+
+        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
+            [s stop];
+          
+            [[MyWebSocket sharedSocketsArray] removeObject:s];
+        }
+
+        [self.manager stopHttpServer:nil];
+        self.manager = nil;
+    }
+
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (isStarting){
+            [self toggleRecording:self.recordButton];
+        }
+    }];
 }
 
 - (void)closeController{
