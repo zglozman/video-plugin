@@ -240,4 +240,8 @@ static KFRecorder *recorder = nil;
      });*/
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskLandscape;
+}
+
 @end
