@@ -47,8 +47,10 @@ class TcpProxyClient: NSObject {
         
         
         self.socket!.on("error") { (data, ask) -> Void in
-            self.socket!.disconnect()
-            onError()
+            if (!self.connected){
+                self.socket!.disconnect()
+                onError()
+            }
         }
         
         self.socket!.on("TcpServerCreated"){data, ask in
