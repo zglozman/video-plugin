@@ -22,7 +22,16 @@
 }
 
 - (void)startHttpServer:(CDVInvokedUrlCommand*)command{
-    
+
+}
+
+
+- (void)startServer:(VideoManager *)videomanager localPort:(NSNumber *)localPort success:(void (^) (NSDictionary *info))success{
+    [videomanager startHttpServerWithPort:localPort callback:^(NSDictionary *info) {
+        NSDictionary *response = @{@"local": info};
+        
+        success(response);
+    }];
 }
 
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
@@ -40,6 +49,8 @@
                     videomanager = [[VideoManager alloc] init];
                 }
                 
+                NSNumber *port = @80;
+                
                 if (videomanager.serverStatus == NO){
                     controller.manager = videomanager;
                     controller.closeCallback = ^(){
@@ -47,17 +58,27 @@
                         [self.commandDelegate sendPluginResult:error callbackId:command.callbackId];
                     };
                     
-                    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:@80 callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
-                        NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
-                        
-                        [videomanager startHttpServerWithPort:localPort callback:^(NSDictionary *info) {
+                    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
+                            NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
+                            
+                            [self startServer:videomanager localPort:localPort success:^(NSDictionary *info) {
+                                [controller startVideoStream];
+                                
+                                NSDictionary *res   = @{@"global": global, @"local": info};
+                                
+                                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:res];
+                                
+                                
+                                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                            }];
+                    } error:^{
+                        [self startServer:videomanager localPort:port success:^(NSDictionary *info) {
                             [controller startVideoStream];
                             
-                            NSDictionary *response = @{@"global": global, @"local": info};
+                            NSDictionary *res   = @{@"global": @{@"ip": @"", @"port": @""}, @"local": info[@"local"]};
                             
-                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
+                            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:res];
                             
-                            NSLog(@"Start server callback");
                             [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
                         }];
                     }];

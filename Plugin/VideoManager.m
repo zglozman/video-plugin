@@ -35,13 +35,15 @@
     httpServer = nil;
 }
 
-- (void)startTcpConnect:(NSString *)host andLocalPort:(NSNumber *)localport callback:(void (^)(NSString * globalIP, NSNumber * globalPort, NSNumber * localPort))callback{
+- (void)startTcpConnect:(NSString *)host andLocalPort:(NSNumber *)localport callback:(void (^)(NSString * globalIP, NSNumber * globalPort, NSNumber * localPort))callback error:(void (^)())error{
     client = [[TcpProxyClient alloc] init];
     
     [client connect:host localPort:localport onConnect:^{
         [client createPublicTcpServer];
     } onTcpConnected:^(NSString * globalIP, NSNumber * globalPort, NSNumber * localPort) {
         callback(globalIP, globalPort, localPort);
+    } onError:^{
+        error();
     }];
 }
 

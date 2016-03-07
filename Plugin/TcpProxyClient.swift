@@ -27,7 +27,7 @@ class TcpProxyClient: NSObject {
         super.init()
     }
     
-    func connect(endpoint: String!, localPort: NSNumber, onConnect: () -> Void, onTcpConnected: (globalIP: String, globalPort: NSNumber, localPort: NSNumber) -> Void) {
+    func connect(endpoint: String!, localPort: NSNumber, onConnect: () -> Void, onTcpConnected: (globalIP: String, globalPort: NSNumber, localPort: NSNumber) -> Void, onError: () -> Void) {
         
         self.onTcpConnected = onTcpConnected
         self.endPoint = endpoint
@@ -43,6 +43,12 @@ class TcpProxyClient: NSObject {
             self.connected = true
             
             onConnect()
+        }
+        
+        
+        self.socket!.on("error") { (data, ask) -> Void in
+            self.socket!.disconnect()
+            onError()
         }
         
         self.socket!.on("TcpServerCreated"){data, ask in
@@ -127,6 +133,7 @@ class TcpProxyClient: NSObject {
                 
             }
             self.socket!.on("error") {data, ask in
+                NSLog("SocketIO Error")
                 
                 //let dict: String = data[1] as! String
                 //let a: NSString! = NSString(data: b, encoding: NSUTF8StringEncoding)
