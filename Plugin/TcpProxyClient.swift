@@ -45,14 +45,6 @@ class TcpProxyClient: NSObject {
             onConnect()
         }
         
-        
-        self.socket!.on("error") { (data, ask) -> Void in
-            if (!self.connected){
-                self.socket!.disconnect()
-                onError()
-            }
-        }
-        
         self.socket!.on("TcpServerCreated"){data, ask in
             //self.handleTcpProxySendEvents(data, callback: { () -> Void in
             
@@ -152,8 +144,11 @@ class TcpProxyClient: NSObject {
             }
         }
         
-        
-        self.socket!.connect()
+        self.socket!.connect(timeoutAfter: 10) { () -> Void in
+            onError();
+            
+            self.socket!.disconnect()
+        }
     }
     
     func handleTcpProxySendEvents(data: NSArray!, callback: () -> Void){
