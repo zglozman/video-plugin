@@ -25,6 +25,16 @@
     TcpProxyClient *client;
 }
 
+static VideoManager *manager;
+
++ (id)shared{
+    if (manager == nil){
+        manager = [[VideoManager alloc] init];
+    }
+    
+    return manager;
+}
+
 - (BOOL)serverStatus{
     return httpServer.isRunning;
 }

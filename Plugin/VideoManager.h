@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface VideoManager : NSObject
++ (id)shared;
 - (BOOL)serverStatus;
 - (void)startTcpConnect:(NSString *)host andLocalPort:(NSNumber *)localport callback:(void (^)(NSString * globalIP, NSNumber * globalPort, NSNumber * localPort))callback error:(void (^)())error;
 - (void)startHttpServerWithPort:(NSNumber *)port callback:(void (^)(NSDictionary *))callback;

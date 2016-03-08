@@ -14,6 +14,10 @@
 - (void)startHttpServer:(CDVInvokedUrlCommand*)command;
 - (void)openStreamController:(CDVInvokedUrlCommand*)command;
 
+- (void)startLocalVideoStream:(CDVInvokedUrlCommand*)command;
+- (void)startGlobalVideoStream:(CDVInvokedUrlCommand*)command;
+
+
 // events
 - (void)onOpenEvent:(CDVInvokedUrlCommand *)command;
 - (void)onCloseEvent:(CDVInvokedUrlCommand *)command;

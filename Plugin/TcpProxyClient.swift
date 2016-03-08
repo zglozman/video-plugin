@@ -144,11 +144,13 @@ class TcpProxyClient: NSObject {
             }
         }
         
-        self.socket!.connect(timeoutAfter: 6) { () -> Void in
+        self.socket!.connect()
+        
+        /*self.socket!.connect(timeoutAfter: 6) { () -> Void in
             onError();
             
             self.socket!.disconnect()
-        }
+        }*/
     }
     
     func handleTcpProxySendEvents(data: NSArray!, callback: () -> Void){

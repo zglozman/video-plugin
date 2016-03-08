@@ -28,63 +28,53 @@
 
 - (void)startServer:(VideoManager *)videomanager localPort:(NSNumber *)localPort success:(void (^) (NSDictionary *info))success{
     [videomanager startHttpServerWithPort:localPort callback:^(NSDictionary *info) {
-        NSDictionary *response = @{@"local": info};
+        success(info);
+    }];
+}
+
+- (void)startLocalVideoStream:(CDVInvokedUrlCommand*)command{
+    VideoManager *videomanager = [VideoManager shared];
+    
+    NSNumber *port = @80;
+    
+    [self startServer:videomanager localPort:port success:^(NSDictionary *info) {
+//        [controller startVideoStream];
         
-        success(response);
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
+}
+
+- (void)startGlobalVideoStream:(CDVInvokedUrlCommand*)command{
+    VideoManager *videomanager = [VideoManager shared];
+    
+    NSNumber *port = @80;
+    
+    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
+        
+        NSDictionary *info = @{@"ip": globalIP, @"port": globalPort};
+        
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    } error:^{
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
 - (void)openStreamController:(CDVInvokedUrlCommand*)command{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
+        controller.manager = [VideoManager shared];
         
-        //[[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(unsleep) name:UIApplicationDidBecomeActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(sleep) name:UIApplicationDidEnterBackgroundNotification object:nil];
         
         [self.viewController presentViewController:controller animated:YES completion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                VideoManager *videomanager;
-                
-                if (videomanager == nil){
-                    videomanager = [[VideoManager alloc] init];
-                }
-                
-                NSNumber *port = @80;
-                
-                if (videomanager.serverStatus == NO){
-                    controller.manager = videomanager;
-                    controller.closeCallback = ^(){
-                        CDVPluginResult *error = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-                        [self.commandDelegate sendPluginResult:error callbackId:command.callbackId];
-                    };
-                    
-                    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
-                            NSDictionary *global = @{@"ip": globalIP, @"port": [globalPort stringValue]};
-                            
-                            [self startServer:videomanager localPort:localPort success:^(NSDictionary *info) {
-                                [controller startVideoStream];
-                                
-                                NSDictionary *res   = @{@"global": global, @"local": info};
-                                
-                                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:res];
-                                
-                                
-                                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-                            }];
-                    } error:^{
-                        [self startServer:videomanager localPort:port success:^(NSDictionary *info) {
-                            [controller startVideoStream];
-                            
-                            NSDictionary *res   = @{@"global": @{@"ip": @"", @"port": @""}, @"local": info[@"local"]};
-                            
-                            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:res];
-                            
-                            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-                        }];
-                    }];
-                } else {
-                    [controller startVideoStream];
-                }
+                [controller startVideoStream];
             });
         }];
         
