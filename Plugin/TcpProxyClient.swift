@@ -144,7 +144,7 @@ class TcpProxyClient: NSObject {
             }
         }
         
-        self.socket!.connect(timeoutAfter: 10) { () -> Void in
+        self.socket!.connect(timeoutAfter: 6) { () -> Void in
             onError();
             
             self.socket!.disconnect()
