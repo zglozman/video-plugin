@@ -114,7 +114,12 @@
 - (void)onCloseEvent:(CDVInvokedUrlCommand *)command{
     NSString *callbackId = command.callbackId;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onClose:) name:@"OnCloseCDVStreamViewController" object:callbackId];
+    VideoManager *videomanager = [VideoManager shared];
+    videomanager.onCloseCallback = ^{
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    };
 }
 
 - (void)onClose:(NSNotification *)notification{

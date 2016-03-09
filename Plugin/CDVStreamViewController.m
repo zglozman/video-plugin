@@ -165,6 +165,7 @@ static KFRecorder *recorder = nil;
 
 - (IBAction)closeViewController:(id)sender { 
     if (self != nil){
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
         [recorder stopRecording];     
         [self stopStream];
 
@@ -187,6 +188,7 @@ static KFRecorder *recorder = nil;
 
 - (void)closeController{
     if (self != nil){
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
         [UIApplication sharedApplication].idleTimerDisabled = NO;
         
         if (recorder.isRecording){

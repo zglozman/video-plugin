@@ -30,6 +30,8 @@ static VideoManager *manager;
 + (id)shared{
     if (manager == nil){
         manager = [[VideoManager alloc] init];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(onCloseStream:) name:@"OnCloseStream" object:nil];
     }
     
     return manager;
@@ -155,6 +157,11 @@ static VideoManager *manager;
     NSString *addr = wifiAddress ? wifiAddress : cellAddress;
     
     return addr;
+}
+
+// event
+- (void)onCloseStream:(NSNotification *)notification{
+    self.onCloseCallback();
 }
 
 @end
