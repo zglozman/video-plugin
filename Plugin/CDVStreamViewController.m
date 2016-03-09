@@ -168,8 +168,11 @@ static KFRecorder *recorder = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
         [recorder stopRecording];
         
-        recorder = nil;
-        [self stopStream];
+        
+        if (!recorder.isRecording){
+            recorder = nil;
+            [self stopStream];
+        }
 
         for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
             [s stop];
@@ -194,9 +197,9 @@ static KFRecorder *recorder = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
             [UIApplication sharedApplication].idleTimerDisabled = NO;
             
-            //  if (recorder.isRecording){
+            if (recorder.isRecording){
                 [recorder stopRecording];
-            //}
+            }
             recorder = nil;
             [self stopStream];
             
@@ -244,6 +247,7 @@ static KFRecorder *recorder = nil;
 
 - (void)sleep{
     [self closeController];
+    recorder = nil;
     
     //    recorder = nil;
     //recorder = [[KFRecorder alloc] init];

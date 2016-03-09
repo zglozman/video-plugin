@@ -24,7 +24,7 @@
 
 @implementation KFH264Encoder
 
-- (void) dealloc {
+- (void) shutdown {
     [_encoder shutdown];
 }
 

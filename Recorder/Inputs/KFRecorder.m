@@ -310,4 +310,9 @@ dispatch_queue_t socketQ;
     [self changeOrientationVideo];
 }
 
+- (void)dealloc{
+    [_h264Encoder shutdown];
+    _h264Encoder = nil;
+}
+
 @end

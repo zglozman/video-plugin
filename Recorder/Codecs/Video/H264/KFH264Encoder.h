@@ -10,5 +10,5 @@
 #import "KFVideoEncoder.h"
 
 @interface KFH264Encoder : KFVideoEncoder <KFSampleBufferEncoder>
-
+- (void) shutdown;
 @end
