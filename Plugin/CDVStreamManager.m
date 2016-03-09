@@ -75,6 +75,10 @@
         [self.viewController presentViewController:controller animated:YES completion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 [controller startVideoStream];
+
+                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+                
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
             });
         }];
         
