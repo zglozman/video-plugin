@@ -166,7 +166,9 @@ static KFRecorder *recorder = nil;
 - (IBAction)closeViewController:(id)sender { 
     if (self != nil){
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
-        [recorder stopRecording];     
+        [recorder stopRecording];
+        
+        recorder = nil;
         [self stopStream];
 
         for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
@@ -187,35 +189,33 @@ static KFRecorder *recorder = nil;
 }
 
 - (void)closeController{
-    if (self != nil){
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
-        [UIApplication sharedApplication].idleTimerDisabled = NO;
-        
-        if (recorder.isRecording){
-            [recorder stopRecording];
-        }
-        recorder = nil;
-        [self stopStream];
-        
-        for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
-            [s stop];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self != nil){
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"OnCloseStream" object:nil];
+            [UIApplication sharedApplication].idleTimerDisabled = NO;
             
-            [[MyWebSocket sharedSocketsArray] removeObject:s];
+            //  if (recorder.isRecording){
+                [recorder stopRecording];
+            //}
+            recorder = nil;
+            [self stopStream];
+            
+            for (MyWebSocket *s in [MyWebSocket sharedSocketsArray]){
+                [s stop];
+                
+                [[MyWebSocket sharedSocketsArray] removeObject:s];
+            }
+            
+            [self.manager stopHttpServer:nil];
+            self.manager = nil;
         }
         
-        //[[MyWebSocket sharedSocketsArray] removeAllObjects];
-        
-        [self.manager stopHttpServer:nil];
-        self.manager = nil;
-    }
-    
-    //[self closeViewController:nil];
-    [self dismissViewControllerAnimated:YES completion:^{
-        
-        if (isStarting){
-            [self toggleRecording:self.recordButton];
-        }
-    }];
+        [self dismissViewControllerAnimated:YES completion:^{
+            if (isStarting){
+                [self toggleRecording:self.recordButton];
+            }
+        }];
+    });
 }
 
 - (void) recorderDidStartRecording:(KFRecorder *)recorder error:(NSError *)error {
