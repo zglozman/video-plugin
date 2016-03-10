@@ -313,6 +313,13 @@ dispatch_queue_t socketQ;
 - (void)dealloc{
     [_h264Encoder shutdown];
     _h264Encoder = nil;
+
+    _videoOutput = nil;
+    _audioOutput = nil;
+    
+    _videoQueue = 0;
+    _audioQueue = 0;
+    socketQ = 0;
 }
 
 @end
