@@ -50,10 +50,10 @@ dispatch_queue_t socketQ;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendLastFrame:) name:@"DIDSENDINIT" object:nil];
     
-    static dispatch_once_t queueCreationGuard;
-    dispatch_once(&queueCreationGuard, ^{
+    //static dispatch_once_t queueCreationGuard;
+    //dispatch_once(&queueCreationGuard, ^{
         socketQ = dispatch_queue_create("com.lfe.backgroundQueue.socket", 0);
-    });
+    //});
     
     return self;
 }
