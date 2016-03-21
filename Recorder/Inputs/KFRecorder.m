@@ -319,7 +319,6 @@ dispatch_queue_t socketQ;
     
     _videoQueue = 0;
     _audioQueue = 0;
-    socketQ = 0;
 }
 
 @end
