@@ -51,7 +51,7 @@
     
     NSNumber *port = @80;
     
-    [videomanager startTcpConnect:@"https://prod.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
+    [videomanager startTcpConnect:@"https://staging.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
         
         NSDictionary *info = @{@"ip": globalIP, @"port": globalPort};
         
@@ -69,6 +69,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         CDVStreamViewController *controller = [[CDVStreamViewController alloc] init];
         controller.manager = [VideoManager shared];
+        controller.manager.streamController = controller;
         
         [[NSNotificationCenter defaultCenter] addObserver:controller selector:@selector(sleep) name:UIApplicationDidEnterBackgroundNotification object:nil];
         
@@ -87,7 +88,11 @@
 }
 
 - (void)closeStreamController:(CDVInvokedUrlCommand *)command{
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"CloseStreamController" object:nil];
+    VideoManager *vm = [VideoManager shared];
+    
+    if (vm.streamController != nil){
+        [vm.streamController closeController];
+    }
 }
 
 #pragma mark Events

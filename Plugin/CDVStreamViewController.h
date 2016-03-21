@@ -10,6 +10,8 @@
 #import "KFRecorder.h"
 #import "VideoManager.h"
 
+@class VideoManager;
+
 @interface CDVStreamViewController : UIViewController<KFRecorderDelegate>
 @property (weak, nonatomic) VideoManager *manager;
 @property (weak, nonatomic) IBOutlet UIView *preview;
@@ -17,6 +19,8 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *startIndicator;
 
 @property (nonatomic,strong) void (^closeCallback)();
+
+- (void)closeController;
 
 - (IBAction)closeViewController:(id)sender;
 - (IBAction)toggleRecording:(id)sender;
