@@ -51,12 +51,14 @@
 - (void) finishWithCompletionHandler:(void (^)(void))handler
 {
     if (_writer != nil){
-        [_writerInput markAsFinished];
-        
-        if (_writer.status == AVAssetWriterStatusWriting) {
-            [_writer finishWritingWithCompletionHandler: handler];
+        if ([_writerInput isReadyForMoreMediaData] != nil){
+            [_writerInput markAsFinished];
             
-            _writer = nil;
+            if (_writer.status == AVAssetWriterStatusWriting) {
+                [_writer finishWritingWithCompletionHandler: handler];
+                
+                _writer = nil;
+            }
         }
     }
 }
