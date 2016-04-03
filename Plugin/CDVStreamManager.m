@@ -51,7 +51,13 @@
     
     NSNumber *port = @80;
     
-    [videomanager startTcpConnect:@"https://staging.luckyqr.io" andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
+    NSString *bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    
+    NSString *path = [[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%@-Info", bundleName] ofType:@"plist"];
+    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:path];
+    NSString *serverURL = [dict objectForKey:@"ServerGlobalURL"];
+    
+    [videomanager startTcpConnect:serverURL andLocalPort:port callback:^(NSString *globalIP, NSNumber *globalPort, NSNumber *localPort) {
         
         NSDictionary *info = @{@"ip": globalIP, @"port": globalPort};
         
